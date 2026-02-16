@@ -1,0 +1,66 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Policy Management</h2>
+    <button class="btn btn-primary" (click)="createPolicy()">
+      + Add New Policy
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="loading" class="text-center">
+    <p>Loading policies...</p>
+  </div>
+
+  <div *ngIf="!loading && policies.length === 0" class="alert alert-info">
+    No policies found. Click "Add New Policy" to create one.
+  </div>
+
+  <div *ngIf="!loading && policies.length > 0" class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>Plan Type</th>
+              <th>Holder Name</th>
+              <th>Insured Amount</th>
+              <th>Premium Amount</th>
+              <th>Issuance Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let policy of policies">
+              <td>{{ policy.planType }}</td>
+              <td>{{ policy.policyHolderName }}</td>
+              <td>₹{{ policy.insuredAmount }}</td>
+              <td>₹{{ policy.premiumAmount }}</td>
+              <td>{{ policy.issuanceDate | date:'mediumDate' }}</td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'bg-success': policy.policyStatus === 'ACTIVE',
+                  'bg-danger': policy.policyStatus === 'INACTIVE',
+                  'bg-warning': policy.policyStatus === 'PENDING_APPROVAL'
+                }">
+                  {{ policy.policyStatus }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-info me-2" (click)="editPolicy(policy.id!)">
+                  Edit
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="deletePolicy(policy.id!)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

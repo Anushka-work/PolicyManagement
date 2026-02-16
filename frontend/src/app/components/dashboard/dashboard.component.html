@@ -1,0 +1,57 @@
+<div class="container mt-4">
+  <h2>Welcome, {{ username }}!</h2>
+  <p class="text-muted">Dashboard Overview</p>
+
+  <div class="row mt-4">
+    <div class="col-md-4">
+      <div class="card dashboard-card bg-primary text-white">
+        <div class="card-body">
+          <h5 class="card-title">Total Policies</h5>
+          <h3>{{ policyCount }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card dashboard-card bg-success text-white">
+        <div class="card-body">
+          <h5 class="card-title">Total Claims</h5>
+          <h3>{{ claimCount }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card dashboard-card bg-warning text-white">
+        <div class="card-body">
+          <h5 class="card-title">Pending Claims</h5>
+          <h3>{{ pendingClaimsCount }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Quick Actions</h5>
+          <div class="d-grid gap-2">
+            <a routerLink="/policies" class="btn btn-outline-primary">Manage Policies</a>
+            <a routerLink="/claims" class="btn btn-outline-success">Manage Claims</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">System Information</h5>
+          <p><strong>User Role:</strong> Admin</p>
+          <p><strong>Last Login:</strong> {{ lastLoginDate | date:'mediumDate' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
