@@ -1,0 +1,64 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Claim Management</h2>
+    <button class="btn btn-primary" (click)="createClaim()">
+      + Add New Claim
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="loading" class="text-center">
+    <p>Loading claims...</p>
+  </div>
+
+  <div *ngIf="!loading && claims.length === 0" class="alert alert-info">
+    No claims found. Click "Add New Claim" to create one.
+  </div>
+
+  <div *ngIf="!loading && claims.length > 0" class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>Claim ID</th>
+              <th>User ID</th>
+              <th>Claim Amount</th>
+              <th>Claim Type</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let claim of claims">
+              <td>{{ claim.id }}</td>
+              <td>{{ claim.userId }}</td>
+              <td>₹{{ claim.claimAmount }}</td>
+              <td>{{ claim.claimType }}</td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'bg-success': claim.status === 'APPROVED',
+                  'bg-danger': claim.status === 'REJECTED',
+                  'bg-warning': claim.status === 'PENDING'
+                }">
+                  {{ claim.status }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-info me-2" (click)="editClaim(claim.id!)">
+                  Edit
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="deleteClaim(claim.id!)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
