@@ -25,11 +25,11 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "buildTarget": "policy-management-frontend:build"
+            "browserTarget": "policy-management-frontend:build"
           },
           "configurations": {
-            "development": {
-              "buildTarget": "policy-management-frontend:build:development"
+            "production": {
+              "browserTarget": "policy-management-frontend:build:production"
             }
           }
         }
