@@ -5,12 +5,16 @@ import org.policy.dto.UserDTO;
 import org.policy.entity.User;
 import org.policy.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -46,5 +50,25 @@ public class UserController {
             return ResponseEntity.ok(user);
         }
         throw new RuntimeException("Invalid credentials");
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+    @GetMapping("/users/inactive")
+    public ResponseEntity<List<User>> getInactiveUsers() {
+        return ResponseEntity.ok(userService.getInactiveUsers());
+    }
+
+    @PutMapping("/users/{userId}/activate")
+    public ResponseEntity<User> activateUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.activateUser(userId));
+    }
+
+    @PutMapping("/users/{userId}/deactivate")
+    public ResponseEntity<User> deactivateUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.deactivateUser(userId));
     }
 }

@@ -49,6 +49,7 @@
             <column name="nominee_contact_number" type="VARCHAR(20)"/>
             <column name="nominee_dob" type="DATE"/>
             <column name="nominee_relationship" type="VARCHAR(100)"/>
+            <column name="nominee_percentage_stake" type="VARCHAR(100)"/>
         </createTable>
 
         <addForeignKeyConstraint baseTableName="issue_policy" baseColumnNames="user_id" referencedTableName="users" referencedColumnNames="id" constraintName="fk_issue_policy_user"/>

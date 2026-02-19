@@ -46,4 +46,30 @@ public class UserServiceImpl implements UserService {
         }
         return user;
     }
+
+    @Override
+    public java.util.List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public java.util.List<User> getInactiveUsers() {
+        return userRepository.findByStatus("INACTIVE");
+    }
+
+    @Override
+    public User activateUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setStatus("ACTIVE");
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User deactivateUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setStatus("INACTIVE");
+        return userRepository.save(user);
+    }
 }
