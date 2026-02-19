@@ -1,7 +1,8 @@
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Policy Management</h2>
-    <button class="btn btn-primary" (click)="createPolicy()">
+    <!-- Only SUPERUSER can create policies -->
+    <button class="btn btn-primary" (click)="createPolicy()" *ngIf="authService.canCreatePolicy()">
       + Add New Policy
     </button>
   </div>
@@ -50,10 +51,15 @@
                 </span>
               </td>
               <td>
-                <button class="btn btn-sm btn-info me-2" (click)="editPolicy(policy.id!)">
+                <!-- All roles can view policy details -->
+                <button class="btn btn-sm btn-secondary me-2" (click)="viewPolicy(policy.id!)">
+                  View Details
+                </button>
+                <!-- Only SUPERUSER can edit/delete policies -->
+                <button class="btn btn-sm btn-info me-2" (click)="editPolicy(policy.id!)" *ngIf="authService.canCreatePolicy()">
                   Edit
                 </button>
-                <button class="btn btn-sm btn-danger" (click)="deletePolicy(policy.id!)">
+                <button class="btn btn-sm btn-danger" (click)="deletePolicy(policy.id!)" *ngIf="authService.canCreatePolicy()">
                   Delete
                 </button>
               </td>

@@ -1,53 +1,100 @@
-<div class="container mt-4">
-  <div class="form-container">
-    <h2>{{ isEditMode ? 'Edit Claim' : 'Add New Claim' }}</h2>
-
-    <div *ngIf="errorMessage" class="alert alert-danger">
-      {{ errorMessage }}
-    </div>
-
-    <div class="card">
-      <div class="card-body">
-        <form (ngSubmit)="onSubmit()">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="claimAmount" class="form-label">Claim Amount *</label>
-              <input type="number" class="form-control" id="claimAmount" [(ngModel)]="claim.claimAmount"
-                name="claimAmount" required>
-            </div>
-
-            <div class="col-md-6 mb-3">
-              <label for="claimType" class="form-label">Claim Type *</label>
-              <select class="form-select" id="claimType" [(ngModel)]="claim.claimType" name="claimType" required>
-                <option value="">Select Type</option>
-                <option *ngFor="let type of claimTypes" [value]="type">{{ type }}</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="status" class="form-label">Status *</label>
-              <select class="form-select" id="status" [(ngModel)]="claim.status" name="status" required>
-                <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label for="claimDocuments" class="form-label">Claim Documents *</label>
-            <textarea class="form-control" id="claimDocuments" rows="4" [(ngModel)]="claim.claimDocuments"
-              name="claimDocuments" required></textarea>
-          </div>
-
-          <div class="d-flex justify-content-end gap-2">
-            <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
-            <button type="submit" class="btn btn-primary" [disabled]="loading">
-              {{ loading ? 'Saving...' : (isEditMode ? 'Update Claim' : 'Create Claim') }}
-            </button>
-          </div>
-        </form>
+<div class="container-fluid p-6">
+  <p-card>
+    <ng-template pTemplate="header">
+      <div>
+        <h2 class="m-0">{{ isEditMode ? 'Edit Claim' : 'Add New Claim' }}</h2>
       </div>
-    </div>
-  </div>
+    </ng-template>
+
+    <p-message *ngIf="errorMessage" severity="error" [text]="errorMessage" class="mb-4"></p-message>
+
+    <form [formGroup]="claimForm" (ngSubmit)="onSubmit()" class="mt-4">
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <div class="field">
+            <label for="claimAmount" class="block font-semibold mb-2">Claim Amount *</label>
+            <p-inputNumber 
+              formControlName="claimAmount"
+              id="claimAmount"
+              inputId="claimAmount"
+              [useGrouping]="true"
+              placeholder="0.00">
+            </p-inputNumber>
+            <small class="p-error block mt-1" *ngIf="f['claimAmount'].invalid && (f['claimAmount'].dirty || f['claimAmount'].touched)">
+              <span *ngIf="f['claimAmount'].errors?.['required']">Claim amount is required</span>
+              <span *ngIf="f['claimAmount'].errors?.['min']">Amount must be greater than 0</span>
+            </small>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-6">
+          <div class="field">
+            <label for="claimType" class="block font-semibold mb-2">Claim Type *</label>
+            <p-dropdown 
+              formControlName="claimType"
+              id="claimType"
+              [options]="claimTypes" 
+              optionLabel="label" 
+              optionValue="value"
+              placeholder="Select Claim Type">
+            </p-dropdown>
+            <small class="p-error block mt-1" *ngIf="f['claimType'].invalid && (f['claimType'].dirty || f['claimType'].touched)">
+              Claim type is required
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid" *ngIf="isEditMode">
+        <div class="col-12 md:col-6">
+          <div class="field">
+            <label for="status" class="block font-semibold mb-2">Status *</label>
+            <p-dropdown 
+              formControlName="status"
+              id="status"
+              [options]="statusOptions" 
+              optionLabel="label" 
+              optionValue="value"
+              placeholder="Select Status">
+            </p-dropdown>
+            <small class="p-error block mt-1" *ngIf="f['status'].invalid && (f['status'].dirty || f['status'].touched)">
+              Status is required
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="claimDocuments" class="block font-semibold mb-2">Claim Documents *</label>
+        <textarea 
+          pInputTextarea 
+          formControlName="claimDocuments"
+          id="claimDocuments" 
+          rows="4" 
+          class="w-full"
+          placeholder="Enter claim documents details">
+        </textarea>
+        <small class="p-error block mt-1" *ngIf="f['claimDocuments'].invalid && (f['claimDocuments'].dirty || f['claimDocuments'].touched)">
+          Claim documents are required
+        </small>
+      </div>
+
+      <div class="flex gap-2 justify-content-end mt-4">
+        <p-button 
+          type="button" 
+          label="Cancel" 
+          severity="secondary"
+          (click)="cancel()"
+          icon="pi pi-times">
+        </p-button>
+        <p-button 
+          type="submit" 
+          label="{{ loading ? 'Saving...' : (isEditMode ? 'Update Claim' : 'Create Claim') }}" 
+          [disabled]="loading || claimForm.invalid"
+          [loading]="loading"
+          icon="pi pi-check">
+        </p-button>
+      </div>
+    </form>
+  </p-card>
 </div>

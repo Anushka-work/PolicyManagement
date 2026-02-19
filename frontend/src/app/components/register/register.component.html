@@ -1,43 +1,102 @@
-<div class="login-container">
-  <h2 class="text-center mb-4">Register</h2>
-
-  <div *ngIf="errorMessage" class="alert alert-danger">
-    {{ errorMessage }}
+<div class="register-form-wrapper">
+  <div class="text-center mb-4">
+    <h2 class="m-0">Register</h2>
   </div>
 
-  <div *ngIf="successMessage" class="alert alert-success">
-    {{ successMessage }}
-  </div>
+  <p-message *ngIf="errorMessage" severity="error" [text]="errorMessage" class="mb-4"></p-message>
+  <p-message *ngIf="successMessage" severity="success" [text]="successMessage" class="mb-4"></p-message>
 
-  <form (ngSubmit)="onRegister()">
-    <div class="mb-3">
-      <label for="username" class="form-label">Username</label>
-      <input type="text" class="form-control" id="username" [(ngModel)]="user.username" name="username" required>
+  <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="mt-4">
+    <div class="field mb-3">
+      <label for="username" class="block font-semibold mb-2">Username</label>
+      <input 
+        pInputText 
+        type="text" 
+        id="username" 
+        formControlName="username"
+        class="w-full"
+        placeholder="Enter username (min 3 characters)">
+      <small class="p-error block mt-1" *ngIf="f['username'].invalid && (f['username'].dirty || f['username'].touched)">
+        <span *ngIf="f['username'].errors?.['required']">Username is required</span>
+        <span *ngIf="f['username'].errors?.['minlength']">Username must be at least 3 characters</span>
+      </small>
     </div>
 
-    <div class="mb-3">
-      <label for="email" class="form-label">Email</label>
-      <input type="email" class="form-control" id="email" [(ngModel)]="user.email" name="email" required>
+    <div class="field mb-3">
+      <label for="email" class="block font-semibold mb-2">Email</label>
+      <input 
+        pInputText 
+        type="email" 
+        id="email" 
+        formControlName="email"
+        class="w-full"
+        placeholder="Enter email">
+      <small class="p-error block mt-1" *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched)">
+        <span *ngIf="f['email'].errors?.['required']">Email is required</span>
+        <span *ngIf="f['email'].errors?.['email']">Please enter a valid email</span>
+      </small>
     </div>
 
-    <div class="mb-3">
-      <label for="password" class="form-label">Password</label>
-      <input type="password" class="form-control" id="password" [(ngModel)]="user.password" name="password" required>
+    <div class="field mb-3">
+      <label for="role" class="block font-semibold mb-2">User Role</label>
+      <p-dropdown 
+        formControlName="role"
+        id="role"
+        [options]="roleOptions" 
+        optionLabel="label" 
+        optionValue="value"
+        placeholder="Select your role"
+        styleClass="w-full">
+      </p-dropdown>
+      <small class="p-info block mt-1" style="color: #6c757d;">
+        Note: SUPERUSER role requires admin approval after registration
+      </small>
     </div>
 
-    <div class="mb-3">
-      <label for="confirmPassword" class="form-label">Confirm Password</label>
-      <input type="password" class="form-control" id="confirmPassword" [(ngModel)]="confirmPassword"
-        name="confirmPassword" required>
+    <div class="field mb-3">
+      <label for="password" class="block font-semibold mb-2">Password</label>
+      <p-password 
+        formControlName="password"
+        id="password"
+        [toggleMask]="true"
+        placeholder="Enter password (min 6 characters)"
+        [feedback]="false">
+      </p-password>
+      <small class="p-error block mt-1" *ngIf="f['password'].invalid && (f['password'].dirty || f['password'].touched)">
+        <span *ngIf="f['password'].errors?.['required']">Password is required</span>
+        <span *ngIf="f['password'].errors?.['minlength']">Password must be at least 6 characters</span>
+      </small>
     </div>
 
-    <button type="submit" class="btn btn-primary w-100 mb-3" [disabled]="loading">
-      {{ loading ? 'Registering...' : 'Register' }}
-    </button>
+    <div class="field mb-4">
+      <label for="confirmPassword" class="block font-semibold mb-2">Confirm Password</label>
+      <p-password 
+        formControlName="confirmPassword"
+        id="confirmPassword"
+        [toggleMask]="true"
+        placeholder="Confirm password"
+        [feedback]="false">
+      </p-password>
+      <small class="p-error block mt-1" *ngIf="f['confirmPassword'].invalid && (f['confirmPassword'].dirty || f['confirmPassword'].touched)">
+        <span *ngIf="f['confirmPassword'].errors?.['required']">Please confirm your password</span>
+      </small>
+      <small class="p-error block mt-1" *ngIf="registerForm.errors?.['passwordMismatch']">
+        Passwords do not match
+      </small>
+    </div>
+
+    <p-button 
+      type="submit" 
+      label="{{ loading ? 'Registering...' : 'Register' }}" 
+      [disabled]="loading || registerForm.invalid"
+      [loading]="loading"
+      class="w-full mb-4"
+      icon="pi pi-user-plus">
+    </p-button>
 
     <div class="text-center">
       <p>Already have an account?
-        <a href="#" (click)="goToLogin(); $event.preventDefault()">Login here</a>
+        <a href="#" (click)="goToLogin(); $event.preventDefault()" class="font-semibold cursor-pointer">Login here</a>
       </p>
     </div>
   </form>

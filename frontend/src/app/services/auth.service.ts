@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { HttpParams } from '@angular/common/http';
-import { User } from '../models/user.model';
+import { User, UserRole } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -49,5 +49,69 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return !!this.currentUserSubject.value;
+  }
+
+  // Role-based access control methods
+  hasRole(role: UserRole | string): boolean {
+    const currentUser = this.currentUserValue;
+    if (!currentUser || !currentUser.role) {
+      return false;
+    }
+    return currentUser.role.toString().toUpperCase() === role.toString().toUpperCase();
+  }
+
+  hasAnyRole(roles: (UserRole | string)[]): boolean {
+    return roles.some(role => this.hasRole(role));
+  }
+
+  // Specific role checks
+  isUser(): boolean {
+    return this.hasRole(UserRole.USER);
+  }
+
+  isApprover(): boolean {
+    return this.hasRole(UserRole.APPROVER);
+  }
+
+  isSuperUser(): boolean {
+    return this.hasRole(UserRole.SUPERUSER);
+  }
+
+  isReadOnly(): boolean {
+    return this.hasRole(UserRole.READONLY);
+  }
+
+  // Permission checks based on requirements
+  canViewPolicies(): boolean {
+    return this.hasAnyRole([UserRole.USER, UserRole.APPROVER, UserRole.SUPERUSER, UserRole.READONLY]);
+  }
+
+  canCreatePolicy(): boolean {
+    return this.hasRole(UserRole.SUPERUSER);
+  }
+
+  canApplyClaim(): boolean {
+    return this.hasRole(UserRole.USER);
+  }
+
+  canApproveClaim(): boolean {
+    return this.hasRole(UserRole.APPROVER);
+  }
+
+  canActivateRegistration(): boolean {
+    return this.hasRole(UserRole.SUPERUSER);
+  }
+
+  // User management methods
+  getAllUsers(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}/users`);
+  }
+
+  activateUser(userId: number): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/users/${userId}/activate`, {});
+  }
+
+  deactivateUser(userId: number): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/users/${userId}/deactivate`, {});
   }
 }

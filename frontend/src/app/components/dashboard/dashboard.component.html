@@ -1,56 +1,160 @@
-<div class="container mt-4">
-  <h2>Welcome, {{ username }}!</h2>
-  <p class="text-muted">Dashboard Overview</p>
-
-  <div class="row mt-4">
-    <div class="col-md-4">
-      <div class="card dashboard-card bg-primary text-white">
-        <div class="card-body">
-          <h5 class="card-title">Total Policies</h5>
-          <h3>{{ policyCount }}</h3>
-        </div>
+<div class="dashboard-container">
+  <div class="dashboard-content">
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div>
+        <h2 class="p-m-0">Policy Management Dashboard</h2>
+        <p class="p-text-secondary p-mt-1">Welcome back, {{ username }}!</p>
+        <p class="p-text-secondary" style="font-size: 0.9rem; margin-top: 0.25rem;">
+          <i class="pi pi-info-circle"></i> {{ getRoleDescription() }}
+        </p>
+      </div>
+      <div class="user-info">
+        <span class="p-text-bold p-d-flex p-align-center">
+          <i class="pi pi-user p-mr-2"></i>
+          {{ userRole }}
+        </span>
+        <small class="p-d-block p-text-secondary">{{ lastLoginDate | date:'short' }}</small>
       </div>
     </div>
 
-    <div class="col-md-4">
-      <div class="card dashboard-card bg-success text-white">
-        <div class="card-body">
-          <h5 class="card-title">Total Claims</h5>
-          <h3>{{ claimCount }}</h3>
+    <!-- Main Stats Cards -->
+    <div class="p-grid stats-grid">
+      <!-- Total Policies -->
+      <div class="p-col-12 p-md-6 p-lg-3">
+        <div class="stat-box stat-box-blue">
+          <div class="stat-content">
+            <div class="stat-label">Total Policies</div>
+            <div class="stat-value">{{ totalPolicies }}</div>
+            <div class="stat-sublabel">{{ activePolicies }} Active</div>
+          </div>
+          <div class="stat-icon">
+            <i class="pi pi-file"></i>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="col-md-4">
-      <div class="card dashboard-card bg-warning text-white">
-        <div class="card-body">
-          <h5 class="card-title">Pending Claims</h5>
-          <h3>{{ pendingClaimsCount }}</h3>
+      <!-- Total Claims -->
+      <div class="p-col-12 p-md-6 p-lg-3">
+        <div class="stat-box stat-box-green">
+          <div class="stat-content">
+            <div class="stat-label">Total Claims</div>
+            <div class="stat-value">{{ totalClaims }}</div>
+            <div class="stat-sublabel">{{ approvedClaims }} Approved</div>
+          </div>
+          <div class="stat-icon">
+            <i class="pi pi-inbox"></i>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <div class="row mt-4">
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Quick Actions</h5>
-          <div class="d-grid gap-2">
-            <a routerLink="/policies" class="btn btn-outline-primary">Manage Policies</a>
-            <a routerLink="/claims" class="btn btn-outline-success">Manage Claims</a>
+      <!-- Pending Claims -->
+      <div class="p-col-12 p-md-6 p-lg-3">
+        <div class="stat-box stat-box-orange">
+          <div class="stat-content">
+            <div class="stat-label">Pending Claims</div>
+            <div class="stat-value">{{ pendingClaims }}</div>
+            <div class="stat-sublabel">Awaiting Review</div>
+          </div>
+          <div class="stat-icon">
+            <i class="pi pi-clock"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Users -->
+      <div class="p-col-12 p-md-6 p-lg-3" *ngIf="isAdmin()">
+        <div class="stat-box stat-box-purple">
+          <div class="stat-content">
+            <div class="stat-label">System Users</div>
+            <div class="stat-value">{{ totalUsers }}</div>
+            <div class="stat-sublabel">Active Users</div>
+          </div>
+          <div class="stat-icon">
+            <i class="pi pi-users"></i>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">System Information</h5>
-          <p><strong>User Role:</strong> Admin</p>
-          <p><strong>Last Login:</strong> {{ lastLoginDate | date:'mediumDate' }}</p>
-        </div>
+    <!-- Detailed Stats Row -->
+    <div class="p-grid details-grid">
+      <!-- Policies Summary -->
+      <div class="p-col-12 p-md-6">
+        <p-card styleClass="details-card">
+          <ng-template pTemplate="header">
+            <div class="card-header-content">
+              <i class="pi pi-file-edit"></i>
+              <span>Policies Summary</span>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="content">
+            <div class="summary-grid">
+              <div class="summary-item">
+                <div class="summary-label">Total</div>
+                <div class="summary-value summary-blue">{{ totalPolicies }}</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-label">Active</div>
+                <div class="summary-value summary-green">{{ activePolicies }}</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-label">Inactive</div>
+                <div class="summary-value summary-gray">{{ totalPolicies - activePolicies }}</div>
+              </div>
+            </div>
+            <p-button 
+              *ngIf="!isReadOnly()"
+              label="View All Policies" 
+              icon="pi pi-arrow-right" 
+              styleClass="p-button-outlined p-mt-3"
+              [routerLink]="['/policies']">
+            </p-button>
+            <div *ngIf="isReadOnly()" class="p-mt-3 p-text-secondary">
+              <i class="pi pi-eye p-mr-2"></i>
+              <small>View Only Access</small>
+            </div>
+          </ng-template>
+        </p-card>
+      </div>
+
+      <!-- Claims Summary -->
+      <div class="p-col-12 p-md-6">
+        <p-card styleClass="details-card">
+          <ng-template pTemplate="header">
+            <div class="card-header-content">
+              <i class="pi pi-list"></i>
+              <span>Claims Summary</span>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="content">
+            <div class="summary-grid">
+              <div class="summary-item">
+                <div class="summary-label">Pending</div>
+                <div class="summary-value summary-orange">{{ pendingClaims }}</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-label">Approved</div>
+                <div class="summary-value summary-green">{{ approvedClaims }}</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-label">Rejected</div>
+                <div class="summary-value summary-red">{{ rejectedClaims }}</div>
+              </div>
+            </div>
+            <p-button 
+              *ngIf="!isReadOnly()"
+              label="View All Claims" 
+              icon="pi pi-arrow-right" 
+              styleClass="p-button-outlined p-button-success p-mt-3"
+              [routerLink]="['/claims']">
+            </p-button>
+            <div *ngIf="isReadOnly()" class="p-mt-3 p-text-secondary">
+              <i class="pi pi-eye p-mr-2"></i>
+              <small>View Only Access</small>
+            </div>
+          </ng-template>
+        </p-card>
       </div>
     </div>
   </div>

@@ -1,9 +1,16 @@
+export enum UserRole {
+  USER = 'USER',
+  APPROVER = 'APPROVER',
+  SUPERUSER = 'SUPERUSER',
+  READONLY = 'READONLY'
+}
+
 export interface User {
   id?: number;
   username: string;
   email: string;
   password?: string;
-  role?: string;
+  role?: UserRole | string;
   status?: string;
 }
 

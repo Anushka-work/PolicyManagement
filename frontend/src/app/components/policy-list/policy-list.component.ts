@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { PolicyService } from '../../services/policy.service';
+import { AuthService } from '../../services/auth.service';
 import { Policy } from '../../models/policy.model';
 
 @Component({
@@ -15,7 +16,8 @@ export class PolicyListComponent implements OnInit {
 
   constructor(
     private policyService: PolicyService,
-    private router: Router
+    private router: Router,
+    public authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -57,5 +59,9 @@ export class PolicyListComponent implements OnInit {
         }
       });
     }
+  }
+
+  viewPolicy(id: number): void {
+    this.router.navigate(['/policies/view', id]);
   }
 }

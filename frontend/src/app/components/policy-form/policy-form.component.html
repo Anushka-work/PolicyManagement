@@ -1,142 +1,334 @@
-<div class="container mt-4">
-  <div class="form-container">
-    <h2>{{ isEditMode ? 'Edit Policy' : 'Add New Policy' }}</h2>
+<div class="form-wrapper">
+  <div class="form-header">
+    <h1>{{ isViewMode ? 'View Policy Details' : (isEditMode ? 'Edit Policy' : 'Create New Policy') }}</h1>
+    <p class="subtitle">{{ isViewMode ? 'Policy information (read-only)' : (isEditMode ? 'Update policy information' : 'Fill in the details to create a new policy') }}</p>
+  </div>
 
-    <div *ngIf="errorMessage" class="alert alert-danger">
-      {{ errorMessage }}
-    </div>
+  <p-message *ngIf="errorMessage" severity="error" [text]="errorMessage" styleClass="error-message"></p-message>
 
-    <div class="card">
-      <div class="card-body">
-        <form (ngSubmit)="onSubmit()">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="planType" class="form-label">Plan Type *</label>
-              <select class="form-select" id="planType" [(ngModel)]="policy.planType" name="planType" required>
-                <option value="">Select Plan</option>
-                <option *ngFor="let type of planTypes" [value]="type">{{ type }}</option>
-              </select>
-            </div>
+  <form [formGroup]="policyForm" (ngSubmit)="onSubmit()">
+    
+    <!-- Step 1: Policy Information -->
+    <div class="form-section">
+      <div class="section-header">
+        <div class="step-indicator">
+          <span class="step-number">1</span>
+        </div>
+        <div class="section-title">
+          <h2>Policy Information</h2>
+          <p class="step-description">Basic policy details and coverage information</p>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="planType">Plan Type <span class="required">*</span></label>
+          <p-dropdown 
+            formControlName="planType"
+            inputId="planType"
+            [options]="planTypes" 
+            optionLabel="label" 
+            optionValue="value"
+            placeholder="Select Plan Type">
+          </p-dropdown>
+          <small class="error-text" *ngIf="f['planType'].invalid && (f['planType'].dirty || f['planType'].touched)">
+            Plan type is required
+          </small>
+        </div>
 
-            <div class="col-md-6 mb-3">
-              <label for="tenure" class="form-label">Tenure (Years) *</label>
-              <input type="number" class="form-control" id="tenure" [(ngModel)]="policy.tenure" name="tenure" min="1"
-                required>
-            </div>
-          </div>
+        <div class="form-field">
+          <label for="tenure">Tenure (Years) <span class="required">*</span></label>
+          <p-inputNumber 
+            formControlName="tenure"
+            inputId="tenure"
+            [min]="1"
+            placeholder="Enter tenure">
+          </p-inputNumber>
+          <small class="error-text" *ngIf="f['tenure'].invalid && (f['tenure'].dirty || f['tenure'].touched)">
+            <span *ngIf="f['tenure'].errors?.['required']">Tenure is required</span>
+            <span *ngIf="f['tenure'].errors?.['min']">Minimum 1 year</span>
+          </small>
+        </div>
 
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="premiumFrequency" class="form-label">Premium Frequency *</label>
-              <select class="form-select" id="premiumFrequency" [(ngModel)]="policy.premiumFrequency"
-                name="premiumFrequency" required>
-                <option value="">Select Frequency</option>
-                <option *ngFor="let frequency of premiumFrequencies" [value]="frequency">
-                  {{ frequency | titlecase }}
-                </option>
-              </select>
-            </div>
+        <div class="form-field">
+          <label for="premiumFrequency">Premium Frequency <span class="required">*</span></label>
+          <p-dropdown 
+            formControlName="premiumFrequency"
+            inputId="premiumFrequency"
+            [options]="premiumFrequencies" 
+            optionLabel="label" 
+            optionValue="value"
+            placeholder="Select Frequency">
+          </p-dropdown>
+          <small class="error-text" *ngIf="f['premiumFrequency'].invalid && (f['premiumFrequency'].dirty || f['premiumFrequency'].touched)">
+            Premium frequency is required
+          </small>
+        </div>
 
-            <div class="col-md-6 mb-3">
-              <label for="insuredAmount" class="form-label">Insured Amount *</label>
-              <input type="number" class="form-control" id="insuredAmount" [(ngModel)]="policy.insuredAmount"
-                name="insuredAmount" required>
-            </div>
-          </div>
+        <div class="form-field">
+          <label for="insuredAmount">Insured Amount <span class="required">*</span></label>
+          <p-inputNumber 
+            formControlName="insuredAmount"
+            inputId="insuredAmount"
+            mode="currency"
+            currency="USD"
+            locale="en-US"
+            placeholder="Enter amount">
+          </p-inputNumber>
+          <small class="error-text" *ngIf="f['insuredAmount'].invalid && (f['insuredAmount'].dirty || f['insuredAmount'].touched)">
+            <span *ngIf="f['insuredAmount'].errors?.['required']">Insured amount is required</span>
+            <span *ngIf="f['insuredAmount'].errors?.['min']">Must be greater than 0</span>
+          </small>
+        </div>
 
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="issuanceDate" class="form-label">Issuance Date *</label>
-              <input type="date" class="form-control" id="issuanceDate" [(ngModel)]="policy.issuanceDate"
-                name="issuanceDate" required>
-            </div>
+        <div class="form-field">
+          <label for="issuanceDate">Issuance Date <span class="required">*</span></label>
+          <p-calendar 
+            formControlName="issuanceDate"
+            inputId="issuanceDate"
+            [showIcon]="true"
+            dateFormat="yy-mm-dd"
+            placeholder="Select date">
+          </p-calendar>
+          <small class="error-text" *ngIf="f['issuanceDate'].invalid && (f['issuanceDate'].dirty || f['issuanceDate'].touched)">
+            Issuance date is required
+          </small>
+        </div>
 
-            <div class="col-md-6 mb-3">
-              <label for="policyStatus" class="form-label">Policy Status *</label>
-              <select class="form-select" id="policyStatus" [(ngModel)]="policy.policyStatus" name="policyStatus"
-                required>
-                <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
-              </select>
-            </div>
-          </div>
+        <div class="form-field">
+          <label for="maturityDate">Maturity Date <span class="required">*</span></label>
+          <p-calendar 
+            formControlName="maturityDate"
+            inputId="maturityDate"
+            [showIcon]="true"
+            dateFormat="yy-mm-dd"
+            placeholder="Select date">
+          </p-calendar>
+          <small class="error-text" *ngIf="f['maturityDate'].invalid && (f['maturityDate'].dirty || f['maturityDate'].touched)">
+            Maturity date is required
+          </small>
+        </div>
 
-          <div class="mb-3">
-            <label for="policyHolderName" class="form-label">Policy Holder Name *</label>
-            <input type="text" class="form-control" id="policyHolderName" [(ngModel)]="policy.policyHolderName"
-              name="policyHolderName" required>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="dob" class="form-label">Date of Birth *</label>
-              <input type="date" class="form-control" id="dob" [(ngModel)]="policy.dob" name="dob" required>
-            </div>
-
-            <div class="col-md-6 mb-3">
-              <label for="mobileNumber" class="form-label">Mobile Number *</label>
-              <input type="text" class="form-control" id="mobileNumber" [(ngModel)]="policy.mobileNumber"
-                name="mobileNumber" required>
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label for="address" class="form-label">Address *</label>
-            <input type="text" class="form-control" id="address" [(ngModel)]="policy.address" name="address" required>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="incomeSource" class="form-label">Income Source *</label>
-              <input type="text" class="form-control" id="incomeSource" [(ngModel)]="policy.incomeSource"
-                name="incomeSource" required>
-            </div>
-
-            <div class="col-md-6 mb-3">
-              <label for="totalIncome" class="form-label">Total Income *</label>
-              <input type="number" class="form-control" id="totalIncome" [(ngModel)]="policy.totalIncome"
-                name="totalIncome" required>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="nomineeName" class="form-label">Nominee Name *</label>
-              <input type="text" class="form-control" id="nomineeName" [(ngModel)]="policy.nomineeName"
-                name="nomineeName" required>
-            </div>
-
-            <div class="col-md-6 mb-3">
-              <label for="nomineeContactNumber" class="form-label">Nominee Contact Number *</label>
-              <input type="text" class="form-control" id="nomineeContactNumber"
-                [(ngModel)]="policy.nomineeContactNumber" name="nomineeContactNumber" required>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="nomineeDOB" class="form-label">Nominee DOB *</label>
-              <input type="date" class="form-control" id="nomineeDOB" [(ngModel)]="policy.nomineeDOB"
-                name="nomineeDOB" required>
-            </div>
-
-            <div class="col-md-6 mb-3">
-              <label for="nomineeRelationship" class="form-label">Nominee Relationship *</label>
-              <select class="form-select" id="nomineeRelationship" [(ngModel)]="policy.nomineeRelationship"
-                name="nomineeRelationship" required>
-                <option value="">Select Relationship</option>
-                <option *ngFor="let relation of nomineeRelationships" [value]="relation">{{ relation }}</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="d-flex justify-content-end gap-2">
-            <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
-            <button type="submit" class="btn btn-primary" [disabled]="loading">
-              {{ loading ? 'Saving...' : (isEditMode ? 'Update Policy' : 'Create Policy') }}
-            </button>
-          </div>
-        </form>
+        <div class="form-field" *ngIf="isEditMode">
+          <label for="policyStatus">Policy Status <span class="required">*</span></label>
+          <p-dropdown 
+            formControlName="policyStatus"
+            inputId="policyStatus"
+            [options]="statusOptions" 
+            optionLabel="label" 
+            optionValue="value"
+            placeholder="Select Status">
+          </p-dropdown>
+          <small class="error-text" *ngIf="f['policyStatus'].invalid && (f['policyStatus'].dirty || f['policyStatus'].touched)">
+            Policy status is required
+          </small>
+        </div>
       </div>
     </div>
-  </div>
+
+    <!-- Step 2: Policy Holder Information -->
+    <div class="form-section">
+      <div class="section-header">
+        <div class="step-indicator">
+          <span class="step-number">2</span>
+        </div>
+        <div class="section-title">
+          <h2>Policy Holder Information</h2>
+          <p class="step-description">Personal details of the policy holder</p>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-field full-width">
+          <label for="policyHolderName">Policy Holder Name <span class="required">*</span></label>
+          <input 
+            pInputText 
+            type="text" 
+            formControlName="policyHolderName"
+            id="policyHolderName"
+            placeholder="Enter full name">
+          <small class="error-text" *ngIf="f['policyHolderName'].invalid && (f['policyHolderName'].dirty || f['policyHolderName'].touched)">
+            <span *ngIf="f['policyHolderName'].errors?.['required']">Name is required</span>
+            <span *ngIf="f['policyHolderName'].errors?.['minlength']">Minimum 3 characters</span>
+          </small>
+        </div>
+
+        <div class="form-field">
+          <label for="dob">Date of Birth <span class="required">*</span></label>
+          <p-calendar 
+            formControlName="dob"
+            inputId="dob"
+            [showIcon]="true"
+            dateFormat="yy-mm-dd"
+            [maxDate]="maxDate"
+            placeholder="Select date">
+          </p-calendar>
+          <small class="error-text" *ngIf="f['dob'].invalid && (f['dob'].dirty || f['dob'].touched)">
+            Date of birth is required
+          </small>
+        </div>
+
+        <div class="form-field">
+          <label for="mobileNumber">Mobile Number <span class="required">*</span></label>
+          <input 
+            pInputText 
+            type="text" 
+            formControlName="mobileNumber"
+            id="mobileNumber"
+            placeholder="10-digit number">
+          <small class="error-text" *ngIf="f['mobileNumber'].invalid && (f['mobileNumber'].dirty || f['mobileNumber'].touched)">
+            <span *ngIf="f['mobileNumber'].errors?.['required']">Mobile number is required</span>
+            <span *ngIf="f['mobileNumber'].errors?.['pattern']">Must be 10 digits</span>
+          </small>
+        </div>
+
+        <div class="form-field full-width">
+          <label for="address">Address <span class="required">*</span></label>
+          <textarea 
+            pInputTextarea 
+            formControlName="address"
+            id="address" 
+            rows="3" 
+            placeholder="Enter full address">
+          </textarea>
+          <small class="error-text" *ngIf="f['address'].invalid && (f['address'].dirty || f['address'].touched)">
+            <span *ngIf="f['address'].errors?.['required']">Address is required</span>
+            <span *ngIf="f['address'].errors?.['minlength']">Minimum 5 characters</span>
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Income Information -->
+    <div class="form-section">
+      <div class="section-header">
+        <div class="step-indicator">
+          <span class="step-number">3</span>
+        </div>
+        <div class="section-title">
+          <h2>Income Information</h2>
+          <p class="step-description">Financial details for policy assessment</p>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="incomeSource">Income Source <span class="required">*</span></label>
+          <input 
+            pInputText 
+            type="text" 
+            formControlName="incomeSource"
+            id="incomeSource"
+            placeholder="e.g., Salary, Business">
+          <small class="error-text" *ngIf="f['incomeSource'].invalid && (f['incomeSource'].dirty || f['incomeSource'].touched)">
+            Income source is required
+          </small>
+        </div>
+
+        <div class="form-field">
+          <label for="totalIncome">Total Annual Income <span class="required">*</span></label>
+          <p-inputNumber 
+            formControlName="totalIncome"
+            inputId="totalIncome"
+            mode="currency"
+            currency="USD"
+            locale="en-US"
+            placeholder="Enter income">
+          </p-inputNumber>
+          <small class="error-text" *ngIf="f['totalIncome'].invalid && (f['totalIncome'].dirty || f['totalIncome'].touched)">
+            <span *ngIf="f['totalIncome'].errors?.['required']">Total income is required</span>
+            <span *ngIf="f['totalIncome'].errors?.['min']">Must be greater than 0</span>
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Nominee Information -->
+    <div class="form-section">
+      <div class="section-header">
+        <div class="step-indicator">
+          <span class="step-number">4</span>
+        </div>
+        <div class="section-title">
+          <h2>Nominee Information</h2>
+          <p class="step-description">Beneficiary details for the policy</p>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-field full-width">
+          <label for="nomineeName">Nominee Name <span class="required">*</span></label>
+          <input 
+            pInputText 
+            type="text" 
+            formControlName="nomineeName"
+            id="nomineeName"
+            placeholder="Enter nominee name">
+          <small class="error-text" *ngIf="f['nomineeName'].invalid && (f['nomineeName'].dirty || f['nomineeName'].touched)">
+            <span *ngIf="f['nomineeName'].errors?.['required']">Nominee name is required</span>
+            <span *ngIf="f['nomineeName'].errors?.['minlength']">Minimum 3 characters</span>
+          </small>
+        </div>
+
+        <div class="form-field">
+          <label for="nomineeContactNumber">Contact Number <span class="required">*</span></label>
+          <input 
+            pInputText 
+            type="text" 
+            formControlName="nomineeContactNumber"
+            id="nomineeContactNumber"
+            placeholder="10-digit number">
+          <small class="error-text" *ngIf="f['nomineeContactNumber'].invalid && (f['nomineeContactNumber'].dirty || f['nomineeContactNumber'].touched)">
+            <span *ngIf="f['nomineeContactNumber'].errors?.['required']">Contact is required</span>
+            <span *ngIf="f['nomineeContactNumber'].errors?.['pattern']">Must be 10 digits</span>
+          </small>
+        </div>
+
+        <div class="form-field">
+          <label for="nomineeDOB">Date of Birth <span class="required">*</span></label>
+          <p-calendar 
+            formControlName="nomineeDOB"
+            inputId="nomineeDOB"
+            [showIcon]="true"
+            dateFormat="yy-mm-dd"
+            [maxDate]="maxDate"
+            placeholder="Select date">
+          </p-calendar>
+          <small class="error-text" *ngIf="f['nomineeDOB'].invalid && (f['nomineeDOB'].dirty || f['nomineeDOB'].touched)">
+            Date of birth is required
+          </small>
+        </div>
+
+        <div class="form-field">
+          <label for="nomineeRelationship">Relationship <span class="required">*</span></label>
+          <p-dropdown 
+            formControlName="nomineeRelationship"
+            inputId="nomineeRelationship"
+            [options]="nomineeRelationships" 
+            optionLabel="label" 
+            optionValue="value"
+            placeholder="Select Relationship">
+          </p-dropdown>
+          <small class="error-text" *ngIf="f['nomineeRelationship'].invalid && (f['nomineeRelationship'].dirty || f['nomineeRelationship'].touched)">
+            Relationship is required
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <p-button 
+        type="button" 
+        [label]="isViewMode ? 'Back to Policies' : 'Cancel'" 
+        severity="secondary"
+        (click)="cancel()"
+        icon="pi pi-times">
+      </p-button>
+      <p-button 
+        *ngIf="!isViewMode"
+        type="submit" 
+        [label]="loading ? 'Saving...' : (isEditMode ? 'Update Policy' : 'Create Policy')" 
+        [disabled]="loading || policyForm.invalid"
+        [loading]="loading"
+        icon="pi pi-check">
+      </p-button>
+    </div>
+  </form>
 </div>

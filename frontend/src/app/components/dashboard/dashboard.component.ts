@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { PolicyService } from '../../services/policy.service';
 import { ClaimService } from '../../services/claim.service';
 import { AuthService } from '../../services/auth.service';
@@ -9,31 +10,73 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  policyCount: number = 0;
-  claimCount: number = 0;
-  pendingClaimsCount: number = 0;
+  // Stats
+  totalPolicies: number = 0;
+  activePolicies: number = 0;
+  totalClaims: number = 0;
+  pendingClaims: number = 0;
+  approvedClaims: number = 0;
+  rejectedClaims: number = 0;
+  totalUsers: number = 1;
+  
+  // User info
   username: string = '';
+  userRole: string = 'User';
   lastLoginDate: Date = new Date();
 
   constructor(
     private policyService: PolicyService,
     private claimService: ClaimService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
     const currentUser = this.authService.currentUserValue;
     if (currentUser) {
       this.username = currentUser.username;
+      this.userRole = currentUser.role ? this.formatRole(currentUser.role) : 'User';
     }
 
     this.loadDashboardData();
   }
 
+  formatRole(role: string): string {
+    const roleMap: { [key: string]: string } = {
+      'USER': 'User',
+      'APPROVER': 'Approver',
+      'SUPERUSER': 'Super User',
+      'READONLY': 'Read Only'
+    };
+    return roleMap[role.toUpperCase()] || role;
+  }
+
+  isAdmin(): boolean {
+    return this.authService.isSuperUser();
+  }
+
+  isReadOnly(): boolean {
+    return this.authService.isReadOnly();
+  }
+
+  getRoleDescription(): string {
+    if (this.authService.isUser()) {
+      return 'You can view policies and apply claims';
+    } else if (this.authService.isApprover()) {
+      return 'You can view policies and approve claims';
+    } else if (this.authService.isSuperUser()) {
+      return 'You have full access to create policies and activate registrations';
+    } else if (this.authService.isReadOnly()) {
+      return 'You have read-only access to view all policies';
+    }
+    return '';
+  }
+
   loadDashboardData(): void {
     this.policyService.getAllPolicies().subscribe({
       next: (policies) => {
-        this.policyCount = policies.length;
+        this.totalPolicies = policies.length;
+        this.activePolicies = policies.filter(p => p.policyStatus === 'ACTIVE').length;
       },
       error: (error) => {
         console.error('Error loading policies:', error);
@@ -42,8 +85,10 @@ export class DashboardComponent implements OnInit {
 
     this.claimService.getAllClaims().subscribe({
       next: (claims) => {
-        this.claimCount = claims.length;
-        this.pendingClaimsCount = claims.filter(c => c.status === 'PENDING').length;
+        this.totalClaims = claims.length;
+        this.pendingClaims = claims.filter(c => c.status === 'PENDING').length;
+        this.approvedClaims = claims.filter(c => c.status === 'APPROVED').length;
+        this.rejectedClaims = claims.filter(c => c.status === 'REJECTED').length;
       },
       error: (error) => {
         console.error('Error loading claims:', error);

@@ -1,29 +1,59 @@
-<div class="login-container">
-  <h2 class="text-center mb-4">Policy Management System</h2>
-  <h4 class="text-center mb-4">Login</h4>
-
-  <div *ngIf="errorMessage" class="alert alert-danger">
-    {{ errorMessage }}
+<div class="login-form-wrapper">
+  <div class="text-center mb-4">
+    <h2 class="m-0">Policy Management System</h2>
+    <h4 class="m-0">Login</h4>
   </div>
 
-  <form (ngSubmit)="onLogin()">
-    <div class="mb-3">
-      <label for="username" class="form-label">Username</label>
-      <input type="text" class="form-control" id="username" [(ngModel)]="username" name="username" required>
+  <p-message *ngIf="errorMessage" severity="error" [text]="errorMessage" class="mb-4"></p-message>
+  <p-message *ngIf="successMessage" severity="success" [text]="successMessage" class="mb-4"></p-message>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="mt-4">
+    <div class="field mb-3">
+      <label for="username" class="block font-semibold mb-2">Username</label>
+      <div style="margin-top: 0.5rem;">
+        <input 
+          pInputText 
+          type="text" 
+          id="username" 
+          formControlName="username"
+          class="w-full"
+          placeholder="Enter username (min 3 characters)">
+      </div>
+      <small class="p-error block mt-1" *ngIf="f['username'].invalid && (f['username'].dirty || f['username'].touched)">
+        <span *ngIf="f['username'].errors?.['required']">Username is required</span>
+        <span *ngIf="f['username'].errors?.['minlength']">Username must be at least 3 characters</span>
+      </small>
     </div>
 
-    <div class="mb-3">
-      <label for="password" class="form-label">Password</label>
-      <input type="password" class="form-control" id="password" [(ngModel)]="password" name="password" required>
+    <div class="field mb-3">
+      <label for="password" class="block font-semibold mb-2">Password</label>
+      <div style="margin-top: 0.5rem;">
+        <p-password 
+          formControlName="password"
+          id="password"
+          [toggleMask]="true"
+          placeholder="Enter password"
+          [feedback]="false"
+          [class.ng-invalid]="f['password'].invalid && (f['password'].dirty || f['password'].touched)">
+        </p-password>
+      </div>
+      <small class="p-error block mt-1" *ngIf="f['password'].invalid && (f['password'].dirty || f['password'].touched)">
+        Password is required
+      </small>
     </div>
 
-    <button type="submit" class="btn btn-primary w-100 mb-3" [disabled]="loading">
-      {{ loading ? 'Logging in...' : 'Login' }}
-    </button>
+    <p-button 
+      type="submit" 
+      label="{{ loading ? 'Logging in...' : 'Login' }}" 
+      [disabled]="loading"
+      [loading]="loading"
+      class="w-full mb-4"
+      icon="pi pi-sign-in">
+    </p-button>
 
     <div class="text-center">
       <p>Don't have an account?
-        <a href="#" (click)="goToRegister(); $event.preventDefault()">Register here</a>
+        <a href="#" (click)="goToRegister(); $event.preventDefault()" class="font-semibold cursor-pointer">Register here</a>
       </p>
     </div>
   </form>

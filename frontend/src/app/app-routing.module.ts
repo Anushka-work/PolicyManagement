@@ -7,19 +7,68 @@ import { PolicyListComponent } from './components/policy-list/policy-list.compon
 import { PolicyFormComponent } from './components/policy-form/policy-form.component';
 import { ClaimListComponent } from './components/claim-list/claim-list.component';
 import { ClaimFormComponent } from './components/claim-form/claim-form.component';
+import { UserManagementComponent } from './components/user-management/user-management.component';
 import { AuthGuard } from './guards/auth.guard';
+import { RoleGuard } from './guards/role.guard';
+import { UserRole } from './models/user.model';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-  { path: 'policies', component: PolicyListComponent, canActivate: [AuthGuard] },
-  { path: 'policies/new', component: PolicyFormComponent, canActivate: [AuthGuard] },
-  { path: 'policies/edit/:id', component: PolicyFormComponent, canActivate: [AuthGuard] },
-  { path: 'claims', component: ClaimListComponent, canActivate: [AuthGuard] },
-  { path: 'claims/new', component: ClaimFormComponent, canActivate: [AuthGuard] },
-  { path: 'claims/edit/:id', component: ClaimFormComponent, canActivate: [AuthGuard] },
+  { 
+    path: 'dashboard', 
+    component: DashboardComponent, 
+    canActivate: [AuthGuard] 
+  },
+  { 
+    path: 'policies', 
+    component: PolicyListComponent, 
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: [UserRole.USER, UserRole.APPROVER, UserRole.SUPERUSER, UserRole.READONLY] }
+  },
+  { 
+    path: 'policies/new', 
+    component: PolicyFormComponent, 
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: [UserRole.SUPERUSER] }
+  },
+  { 
+    path: 'policies/edit/:id', 
+    component: PolicyFormComponent, 
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: [UserRole.SUPERUSER] }
+  },
+  { 
+    path: 'policies/view/:id', 
+    component: PolicyFormComponent, 
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: [UserRole.USER, UserRole.APPROVER, UserRole.SUPERUSER, UserRole.READONLY] }
+  },
+  { 
+    path: 'claims', 
+    component: ClaimListComponent, 
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: [UserRole.USER, UserRole.APPROVER] }
+  },
+  { 
+    path: 'claims/new', 
+    component: ClaimFormComponent, 
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: [UserRole.USER] }
+  },
+  { 
+    path: 'claims/edit/:id', 
+    component: ClaimFormComponent, 
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: [UserRole.USER, UserRole.APPROVER] }
+  },
+  { 
+    path: 'users', 
+    component: UserManagementComponent, 
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: [UserRole.SUPERUSER] }
+  },
   { path: '**', redirectTo: '/login' }
 ];
 

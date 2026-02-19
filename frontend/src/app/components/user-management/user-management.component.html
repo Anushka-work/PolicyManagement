@@ -1,0 +1,80 @@
+<div class="user-management-container">
+  <div class="header">
+    <h2>User Management</h2>
+    <p class="subtitle">Manage user accounts and permissions</p>
+  </div>
+
+  <div class="content-card" *ngIf="!loading">
+    <p-table 
+      [value]="users" 
+      [paginator]="true" 
+      [rows]="10"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      styleClass="p-datatable-striped">
+      
+      <ng-template pTemplate="header">
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="body" let-user>
+        <tr>
+          <td>{{ user.id }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <span [ngClass]="getRoleBadgeClass(user.role)">
+              {{ user.role }}
+            </span>
+          </td>
+          <td>
+            <span [ngClass]="getStatusBadgeClass(user.status)">
+              {{ user.status }}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button 
+                *ngIf="!isActive(user)"
+                pButton 
+                type="button" 
+                label="Activate" 
+                icon="pi pi-check-circle"
+                class="p-button-success p-button-sm"
+                (click)="activateUser(user.id)">
+              </button>
+              <button 
+                *ngIf="isActive(user)"
+                pButton 
+                type="button" 
+                label="Deactivate" 
+                icon="pi pi-times-circle"
+                class="p-button-danger p-button-sm"
+                (click)="deactivateUser(user.id)">
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="text-center">No users found</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <p-progressSpinner></p-progressSpinner>
+    <p>Loading users...</p>
+  </div>
+</div>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ClaimService } from '../../services/claim.service';
+import { AuthService } from '../../services/auth.service';
 import { Claim } from '../../models/claim.model';
 
 @Component({
@@ -15,7 +16,8 @@ export class ClaimListComponent implements OnInit {
 
   constructor(
     private claimService: ClaimService,
-    private router: Router
+    private router: Router,
+    public authService: AuthService
   ) { }
 
   ngOnInit(): void {
