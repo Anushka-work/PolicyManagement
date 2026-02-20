@@ -55,9 +55,13 @@ export class PolicyFormComponent implements OnInit {
     { label: 'Other', value: 'OTHER' }
   ];
 
+  // User selection for SUPERUSER
+  users: any[] = [];
+  loadingUsers: boolean = false;
+
   constructor(
     private policyService: PolicyService,
-    private authService: AuthService,
+    public authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
     private formBuilder: FormBuilder
@@ -66,6 +70,13 @@ export class PolicyFormComponent implements OnInit {
   ngOnInit(): void {
     // Check if we're in view mode based on the URL
     this.isViewMode = this.router.url.includes('/policies/view/');
+    
+    // Determine edit mode BEFORE initializing form
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.isEditMode = !this.isViewMode; // Only set edit mode if not in view mode
+      this.policyId = +id;
+    }
     
     // Check if user has permission to create/edit policies
     // Allow view mode for all authenticated users
@@ -78,16 +89,42 @@ export class PolicyFormComponent implements OnInit {
     }
     
     this.initializeForm();
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.isEditMode = !this.isViewMode; // Only set edit mode if not in view mode
-      this.policyId = +id;
+    
+    // Load users if SUPERUSER and in create mode
+    if (this.authService.isSuperUser() && !this.isEditMode && !this.isViewMode) {
+      this.loadUsers();
+    }
+    
+    // Load policy data if editing or viewing
+    if (this.policyId) {
       this.loadPolicy(this.policyId);
     }
   }
 
+  loadUsers(): void {
+    this.loadingUsers = true;
+    this.authService.getAllUsers().subscribe({
+      next: (users) => {
+        // Filter only ACTIVE users
+        this.users = users
+          .filter(user => user.status === 'ACTIVE')
+          .map(user => ({
+            label: `${user.username} (${user.email}) - ${user.role}`,
+            value: user.id
+          }));
+        this.loadingUsers = false;
+      },
+      error: (error) => {
+        console.error('Error loading users:', error);
+        this.errorMessage = 'Failed to load users';
+        this.loadingUsers = false;
+      }
+    });
+  }
+
   initializeForm(): void {
     this.policyForm = this.formBuilder.group({
+      userId: ['', this.authService.isSuperUser() && !this.isEditMode ? [Validators.required] : []],
       planType: ['', [Validators.required]],
       tenure: ['', [Validators.required, Validators.min(1)]],
       premiumFrequency: ['', [Validators.required]],
@@ -151,7 +188,11 @@ export class PolicyFormComponent implements OnInit {
     const formValue = this.policyForm.getRawValue();
 
     if (this.isEditMode && this.policyId) {
-      this.policyService.updatePolicy(this.policyId, formValue).subscribe({
+      // Remove userId from formValue as it's not part of Policy model
+      const policyData = { ...formValue };
+      delete policyData.userId;
+      
+      this.policyService.updatePolicy(this.policyId, policyData).subscribe({
         next: () => {
           this.loading = false;
           this.router.navigate(['/policies']);
@@ -163,13 +204,20 @@ export class PolicyFormComponent implements OnInit {
         }
       });
     } else {
-      const userId = this.authService.currentUserValue?.id;
+      // Get userId from form if SUPERUSER selected one, otherwise use current user
+      let userId = formValue.userId || this.authService.currentUserValue?.id;
+      
       if (!userId) {
         this.loading = false;
-        this.errorMessage = 'Please log in before issuing a policy';
+        this.errorMessage = 'Please select a user or log in before issuing a policy';
         return;
       }
-      this.policyService.createPolicy(formValue, userId).subscribe({
+      
+      // Remove userId from formValue as it's not part of Policy model
+      const policyData = { ...formValue };
+      delete policyData.userId;
+      
+      this.policyService.createPolicy(policyData, userId).subscribe({
         next: () => {
           this.loading = false;
           this.router.navigate(['/policies']);
@@ -213,7 +261,12 @@ export class PolicyFormComponent implements OnInit {
   getStepFields(step: number): string[] {
     switch(step) {
       case 0: // Policy Information
-        return ['planType', 'tenure', 'premiumFrequency', 'insuredAmount', 'issuanceDate', 'maturityDate'];
+        const step0Fields = ['planType', 'tenure', 'premiumFrequency', 'insuredAmount', 'issuanceDate', 'maturityDate'];
+        // Add userId field for SUPERUSER in create mode
+        if (this.authService.isSuperUser() && !this.isEditMode) {
+          step0Fields.unshift('userId');
+        }
+        return step0Fields;
       case 1: // Holder Information
         return ['policyHolderName', 'dob', 'address', 'mobileNumber'];
       case 2: // Financial Details

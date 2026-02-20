@@ -73,4 +73,32 @@ export class ClaimListComponent implements OnInit {
       });
     }
   }
+
+  approveClaim(id: number): void {
+    if (confirm('Are you sure you want to approve this claim?')) {
+      this.claimService.approveClaim(id).subscribe({
+        next: () => {
+          this.loadClaims();
+        },
+        error: (error) => {
+          this.errorMessage = 'Failed to approve claim';
+          console.error('Error approving claim:', error);
+        }
+      });
+    }
+  }
+
+  rejectClaim(id: number): void {
+    if (confirm('Are you sure you want to reject this claim?')) {
+      this.claimService.rejectClaim(id).subscribe({
+        next: () => {
+          this.loadClaims();
+        },
+        error: (error) => {
+          this.errorMessage = 'Failed to reject claim';
+          console.error('Error rejecting claim:', error);
+        }
+      });
+    }
+  }
 }

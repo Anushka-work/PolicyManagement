@@ -42,4 +42,12 @@ export class ClaimService {
   deleteClaim(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  approveClaim(id: number): Observable<Claim> {
+    return this.http.put<Claim>(`${this.apiUrl}/approve/${id}`, {});
+  }
+
+  rejectClaim(id: number): Observable<Claim> {
+    return this.http.put<Claim>(`${this.apiUrl}/reject/${id}`, {});
+  }
 }

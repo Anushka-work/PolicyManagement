@@ -25,6 +25,26 @@
         </div>
       </div>
       <div class="form-grid">
+        <!-- User Selection (SUPERUSER only, Create mode only) -->
+        <div class="form-field full-width" *ngIf="authService.isSuperUser() && !isEditMode && !isViewMode">
+          <label for="userId">Select User <span class="required">*</span></label>
+          <p-dropdown 
+            formControlName="userId"
+            inputId="userId"
+            [options]="users"
+            optionLabel="label"
+            optionValue="value"
+            [filter]="true"
+            filterBy="label"
+            placeholder="Select user to create policy for"
+            [disabled]="loadingUsers">
+          </p-dropdown>
+          <small *ngIf="loadingUsers" class="info-text">Loading users...</small>
+          <small class="error-text" *ngIf="f['userId'] && f['userId'].invalid && (f['userId'].dirty || f['userId'].touched)">
+            Please select a user
+          </small>
+        </div>
+
         <div class="form-field">
           <label for="planType">Plan Type <span class="required">*</span></label>
           <p-dropdown 
