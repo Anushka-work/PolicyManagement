@@ -19,6 +19,15 @@ export class PolicyFormComponent implements OnInit {
   loading: boolean = false;
   errorMessage: string = '';
   maxDate: Date = new Date(); // For date of birth validation
+  
+  // Step management
+  currentStep: number = 0;
+  steps = [
+    { label: 'Policy Information' },
+    { label: 'Holder Information' },
+    { label: 'Financial Details' },
+    { label: 'Nominee Details' }
+  ];
 
   planTypes = [
     { label: 'Term Life', value: 'TERM_LIFE' },
@@ -176,6 +185,51 @@ export class PolicyFormComponent implements OnInit {
 
   cancel(): void {
     this.router.navigate(['/policies']);
+  }
+
+  // Step navigation methods
+  nextStep(): void {
+    if (this.isStepValid(this.currentStep)) {
+      this.currentStep++;
+    } else {
+      this.markStepFieldsAsTouched(this.currentStep);
+    }
+  }
+
+  previousStep(): void {
+    if (this.currentStep > 0) {
+      this.currentStep--;
+    }
+  }
+
+  isStepValid(step: number): boolean {
+    const stepFields = this.getStepFields(step);
+    return stepFields.every(field => {
+      const control = this.policyForm.get(field);
+      return control && control.valid;
+    });
+  }
+
+  getStepFields(step: number): string[] {
+    switch(step) {
+      case 0: // Policy Information
+        return ['planType', 'tenure', 'premiumFrequency', 'insuredAmount', 'issuanceDate', 'maturityDate'];
+      case 1: // Holder Information
+        return ['policyHolderName', 'dob', 'address', 'mobileNumber'];
+      case 2: // Financial Details
+        return ['incomeSource', 'totalIncome'];
+      case 3: // Nominee Details
+        return ['nomineeName', 'nomineeContactNumber', 'nomineeDOB', 'nomineeRelationship'];
+      default:
+        return [];
+    }
+  }
+
+  markStepFieldsAsTouched(step: number): void {
+    const stepFields = this.getStepFields(step);
+    stepFields.forEach(field => {
+      this.policyForm.get(field)?.markAsTouched();
+    });
   }
 
   get f() {

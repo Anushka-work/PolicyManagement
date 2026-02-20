@@ -15,6 +15,10 @@ export class ClaimService {
     return this.http.get<Claim[]>(`${this.apiUrl}/`);
   }
 
+  getClaimsByUser(userId: number): Observable<Claim[]> {
+    return this.http.get<Claim[]>(`${this.apiUrl}/user/${userId}`);
+  }
+
   getClaimById(id: number): Observable<Claim> {
     return this.getAllClaims().pipe(
       map((claims) => {

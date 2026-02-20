@@ -73,7 +73,19 @@ export class DashboardComponent implements OnInit {
   }
 
   loadDashboardData(): void {
-    this.policyService.getAllPolicies().subscribe({
+    const currentUser = this.authService.currentUserValue;
+    
+    if (!currentUser || !currentUser.id) {
+      console.error('User not authenticated');
+      return;
+    }
+
+    // Superusers see all policies, regular users see only their own
+    const policiesObservable = this.authService.isSuperUser() 
+      ? this.policyService.getAllPolicies()
+      : this.policyService.getPoliciesByUser(currentUser.id);
+
+    policiesObservable.subscribe({
       next: (policies) => {
         this.totalPolicies = policies.length;
         this.activePolicies = policies.filter(p => p.policyStatus === 'ACTIVE').length;
@@ -83,7 +95,12 @@ export class DashboardComponent implements OnInit {
       }
     });
 
-    this.claimService.getAllClaims().subscribe({
+    // Superusers and approvers see all claims, regular users see only their own
+    const claimsObservable = (this.authService.isSuperUser() || this.authService.isApprover())
+      ? this.claimService.getAllClaims()
+      : this.claimService.getClaimsByUser(currentUser.id);
+
+    claimsObservable.subscribe({
       next: (claims) => {
         this.totalClaims = claims.length;
         this.pendingClaims = claims.filter(c => c.status === 'PENDING').length;

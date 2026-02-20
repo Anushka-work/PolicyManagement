@@ -26,7 +26,20 @@ export class PolicyListComponent implements OnInit {
 
   loadPolicies(): void {
     this.loading = true;
-    this.policyService.getAllPolicies().subscribe({
+    const currentUser = this.authService.currentUserValue;
+    
+    if (!currentUser || !currentUser.id) {
+      this.errorMessage = 'User not authenticated';
+      this.loading = false;
+      return;
+    }
+
+    // Superusers can see all policies, regular users see only their own
+    const policiesObservable = this.authService.isSuperUser() 
+      ? this.policyService.getAllPolicies()
+      : this.policyService.getPoliciesByUser(currentUser.id);
+
+    policiesObservable.subscribe({
       next: (policies) => {
         this.policies = policies;
         this.loading = false;

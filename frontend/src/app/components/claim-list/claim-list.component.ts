@@ -26,7 +26,20 @@ export class ClaimListComponent implements OnInit {
 
   loadClaims(): void {
     this.loading = true;
-    this.claimService.getAllClaims().subscribe({
+    const currentUser = this.authService.currentUserValue;
+    
+    if (!currentUser || !currentUser.id) {
+      this.errorMessage = 'User not authenticated';
+      this.loading = false;
+      return;
+    }
+
+    // Superusers and approvers can see all claims, regular users see only their own
+    const claimsObservable = (this.authService.isSuperUser() || this.authService.isApprover())
+      ? this.claimService.getAllClaims()
+      : this.claimService.getClaimsByUser(currentUser.id);
+
+    claimsObservable.subscribe({
       next: (claims) => {
         this.claims = claims;
         this.loading = false;
