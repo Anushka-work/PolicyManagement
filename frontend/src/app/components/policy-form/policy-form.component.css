@@ -1,128 +1,94 @@
-/* Form Wrapper */
 .form-wrapper {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  background: #f5f7fa;
-  min-height: 100vh;
 }
 
-/* Form Header */
 .form-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 2.5rem;
-  border-radius: 12px;
+  background: #1e7e34;
+  padding: 1.5rem;
+  border-radius: 4px;
   margin-bottom: 2rem;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
   text-align: center;
 }
 
 .form-header h1 {
   color: white;
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 1.75rem;
   margin: 0 0 0.5rem 0;
-  letter-spacing: 0.5px;
 }
 
 .form-header .subtitle {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 1rem;
+  color: white;
+  font-size: 0.95rem;
   margin: 0;
 }
 
-/* Error Message */
-.error-message {
+.steps-container {
   margin-bottom: 2rem;
 }
 
-/* Form Section - Boxed Style */
+.error-message {
+  margin-bottom: 1.5rem;
+}
+
 .form-section {
   background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e1e8ed;
-  transition: transform 0.2s, box-shadow 0.2s;
-  position: relative;
+  border-radius: 4px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #dee2e6;
 }
 
-.form-section:not(:last-of-type)::after {
-  content: '';
-  position: absolute;
-  left: 47px;
-  bottom: -2rem;
-  width: 3px;
-  height: 2rem;
-  background: linear-gradient(180deg, #667eea 0%, #e1e8ed 100%);
-  z-index: 1;
-}
-
-.form-section:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-}
-
-/* Section Header */
 .section-header {
   display: flex;
   align-items: center;
   margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #f0f0f0;
-  gap: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #dee2e6;
+  gap: 1rem;
 }
 
-/* Step Indicator */
 .step-indicator {
   flex-shrink: 0;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #1e7e34;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-  position: relative;
 }
 
 .step-number {
   color: white;
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1;
+  font-size: 1.25rem;
+  font-weight: 600;
 }
 
-/* Section Title */
 .section-title {
   flex: 1;
 }
 
 .section-title h2 {
-  color: #2c3e50;
-  font-size: 1.4rem;
-  font-weight: 700;
+  color: #212529;
+  font-size: 1.25rem;
+  font-weight: 600;
   margin: 0 0 0.25rem 0;
 }
 
 .step-description {
   color: #6c757d;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   margin: 0;
-  font-weight: 400;
 }
 
-/* Form Grid Layout */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  align-items: start;
+  gap: 1rem;
 }
 
-/* Form Field */
 .form-field {
   display: flex;
   flex-direction: column;
@@ -133,19 +99,16 @@
 }
 
 .form-field label {
-  display: block;
   margin-bottom: 0.5rem;
   color: #495057;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.9rem;
 }
 
 .form-field label .required {
-  color: #e74c3c;
-  margin-left: 2px;
+  color: #dc3545;
 }
 
-/* Input Styling */
 ::ng-deep .form-field .p-inputtext,
 ::ng-deep .form-field .p-dropdown,
 ::ng-deep .form-field .p-inputnumber,
@@ -158,184 +121,62 @@
   width: 100%;
 }
 
-::ng-deep .p-inputtext,
-::ng-deep .p-dropdown,
-::ng-deep .p-inputnumber-input {
-  padding: 0.75rem;
-  font-size: 0.95rem;
-  border: 2px solid #e1e8ed;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-::ng-deep .p-inputtext:hover,
-::ng-deep .p-dropdown:hover,
-::ng-deep .p-inputnumber:hover .p-inputnumber-input {
-  border-color: #cbd5e0;
-}
-
-::ng-deep .p-inputtext:focus,
-::ng-deep .p-dropdown:not(.p-disabled).p-focus,
-::ng-deep .p-inputnumber:not(.p-disabled).p-inputnumber-focus .p-inputnumber-input,
-::ng-deep .p-calendar .p-inputtext:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-::ng-deep .p-calendar .p-inputtext {
-  border-radius: 8px 0 0 8px;
-}
-
-::ng-deep .p-datepicker-trigger {
-  border-radius: 0 8px 8px 0;
-}
-
-/* Textarea */
 ::ng-deep .p-inputtextarea {
-  padding: 0.75rem;
-  font-size: 0.95rem;
-  border: 2px solid #e1e8ed;
-  border-radius: 8px;
   resize: vertical;
   min-height: 80px;
-  transition: all 0.3s ease;
 }
 
-::ng-deep .p-inputtextarea:hover {
-  border-color: #cbd5e0;
-}
-
-::ng-deep .p-inputtextarea:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-/* Error Text */
 .error-text {
-  color: #e74c3c;
-  font-size: 0.8rem;
-  margin-top: 0.35rem;
-  display: block;
-  font-weight: 500;
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
 }
 
-/* Form Actions */
+.info-text {
+  color: #1e7e34;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
 .form-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 2px solid #e1e8ed;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #dee2e6;
 }
 
-::ng-deep .form-actions .p-button {
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  min-width: 140px;
+.step-navigation {
+  display: flex;
+  gap: 0.5rem;
 }
 
-::ng-deep .form-actions .p-button:not(.p-button-secondary) {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
+.steps-container {
+  margin-bottom: 2rem;
+  background: white;
+  border-radius: 4px;
+  padding: 1.5rem;
+  border: 1px solid #dee2e6;
 }
 
-::ng-deep .form-actions .p-button:not(.p-button-secondary):hover:not(:disabled) {
-  background: linear-gradient(135deg, #5568d3 0%, #653a8a 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+::ng-deep .steps-container .p-steps {
+  padding: 0;
 }
 
-::ng-deep .form-actions .p-button-secondary {
-  background: #6c757d;
-  border: none;
+::ng-deep .steps-container .p-steps .p-steps-item .p-menuitem-link {
+  background: transparent;
 }
 
-::ng-deep .form-actions .p-button-secondary:hover:not(:disabled) {
-  background: #5a6268;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
-}
-
-::ng-deep .p-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Dropdown Panel Styling */
-::ng-deep .p-dropdown-panel {
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  border: 1px solid #e1e8ed;
-}
-
-::ng-deep .p-dropdown-items .p-dropdown-item:hover {
-  background: #f0f3ff;
-  color: #667eea;
-}
-
-::ng-deep .p-dropdown-items .p-dropdown-item.p-highlight {
-  background: #667eea;
-  color: white;
-}
-
-/* Calendar Panel */
-::ng-deep .p-datepicker {
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  border: 1px solid #e1e8ed;
-}
-
-::ng-deep .p-datepicker .p-datepicker-header {
-  background: #667eea;
-  color: white;
-  border-radius: 8px 8px 0 0;
-}
-
-::ng-deep .p-datepicker table td > span:hover {
-  background: #f0f3ff;
-  color: #667eea;
-}
-
-::ng-deep .p-datepicker table td > span.p-highlight {
-  background: #667eea;
-  color: white;
-}
-
-/* Responsive Design */
 @media (max-width: 768px) {
   .form-wrapper {
     padding: 1rem;
   }
 
-  .form-header {
-    padding: 1.5rem;
-  }
-
-  .form-header h1 {
-    font-size: 1.5rem;
-  }
-
-  .form-section {
-    padding: 1.5rem;
-  }
-
-  .form-section:not(:last-of-type)::after {
-    left: 37px;
-  }
-
   .form-grid {
     grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .form-field.full-width {
-    grid-column: 1;
   }
 
   .form-actions {
@@ -344,67 +185,5 @@
 
   ::ng-deep .form-actions .p-button {
     width: 100%;
-  }
-
-  .step-indicator {
-    width: 40px;
-    height: 40px;
-  }
-
-  .step-number {
-    font-size: 1.2rem;
-  }
-
-  .section-title h2 {
-    font-size: 1.1rem;
-  }
-
-  .step-description {
-    font-size: 0.85rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .form-wrapper {
-    padding: 0.5rem;
-  }
-
-  .form-header {
-    padding: 1rem;
-    border-radius: 8px;
-  }
-
-  .form-header h1 {
-    font-size: 1.25rem;
-  }
-
-  .form-header .subtitle {
-    font-size: 0.9rem;
-  }
-
-  .form-section {
-    padding: 1rem;
-    border-radius: 8px;
-  }
-
-  .form-section:not(:last-of-type)::after {
-    display: none;
-  }
-
-  .step-indicator {
-    width: 35px;
-    height: 35px;
-  }
-
-  .step-number {
-    font-size: 1rem;
-  }
-
-  .section-title h2 {
-    font-size: 1rem;
-  }
-
-  .step-description {
-    font-size: 0.8rem;
   }
 }

@@ -11,3 +11,153 @@ h2 {
 .gap-2 {
   gap: 10px;
 }
+
+/* Proper form field alignment */
+.field {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #495057;
+}
+
+/* Ensure all input fields have consistent width */
+::ng-deep .field p-inputnumber,
+::ng-deep .field p-dropdown,
+::ng-deep .field textarea {
+  width: 100%;
+}
+
+::ng-deep .field .p-inputnumber,
+::ng-deep .field .p-dropdown,
+::ng-deep .field .p-inputtextarea {
+  width: 100%;
+}
+
+::ng-deep .field .p-inputnumber input {
+  width: 100%;
+}
+
+/* Error message styling */
+.p-error {
+  color: #dc3545;
+  font-size: 0.875rem;
+  display: block;
+  margin-top: 0.25rem;
+}
+
+/* Grid system for responsive layout */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1rem;
+  margin-bottom: 0;
+}
+
+.col-12 {
+  grid-column: span 12;
+}
+
+.md\:col-6 {
+  grid-column: span 12;
+}
+
+@media (min-width: 768px) {
+  .md\:col-6 {
+    grid-column: span 6;
+  }
+}
+
+/* Form actions alignment */
+.flex {
+  display: flex;
+}
+
+.justify-content-end {
+  justify-content: flex-end;
+}
+
+.mt-4 {
+  margin-top: 1.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+
+/* Button spacing */
+::ng-deep .flex.gap-2 {
+  gap: 0.5rem;
+}
+
+/* Card header styling */
+::ng-deep p-card .p-card-header {
+  padding: 1.5rem;
+  background: #1e7e34;
+  color: white;
+}
+
+::ng-deep p-card .p-card-header h2 {
+  color: white;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+::ng-deep p-card .p-card-body {
+  padding: 1.5rem;
+}
+
+/* Textarea proper sizing */
+.w-full {
+  width: 100%;
+}
+
+::ng-deep textarea.p-inputtextarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Utility classes */
+.block {
+  display: block;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
+/* Container styling */
+.container-fluid {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Ensure proper spacing between form sections */
+.grid + .grid {
+  margin-top: 0;
+}
+
+.grid + .field {
+  margin-top: 0;
+}

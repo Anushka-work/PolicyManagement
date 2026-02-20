@@ -18,6 +18,7 @@ import { ToastModule } from 'primeng/toast';
 import { AccordionModule } from 'primeng/accordion';
 import { CalendarModule } from 'primeng/calendar';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { StepsModule } from 'primeng/steps';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -64,7 +65,8 @@ import { UserManagementComponent } from './components/user-management/user-manag
     ToastModule,
     AccordionModule,
     CalendarModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
+    StepsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
