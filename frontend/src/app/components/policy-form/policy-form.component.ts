@@ -137,11 +137,13 @@ export class PolicyFormComponent implements OnInit {
       mobileNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       incomeSource: ['', [Validators.required]],
       totalIncome: ['', [Validators.required, Validators.min(0)]],
+      premiumAmount: ['', [Validators.required, Validators.min(0)]],
       policyStatus: ['PENDING', [Validators.required]],
       nomineeName: ['', [Validators.required, Validators.minLength(3)]],
       nomineeContactNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       nomineeDOB: ['', [Validators.required]],
-      nomineeRelationship: ['', [Validators.required]]
+      nomineeRelationship: ['', [Validators.required]],
+      nomineePercentageStake: ['', [Validators.required, Validators.min(0), Validators.max(100)]]
     });
     
     // Disable policyStatus in create mode
@@ -270,9 +272,9 @@ export class PolicyFormComponent implements OnInit {
       case 1: // Holder Information
         return ['policyHolderName', 'dob', 'address', 'mobileNumber'];
       case 2: // Financial Details
-        return ['incomeSource', 'totalIncome'];
+        return ['incomeSource', 'totalIncome', 'premiumAmount'];
       case 3: // Nominee Details
-        return ['nomineeName', 'nomineeContactNumber', 'nomineeDOB', 'nomineeRelationship'];
+        return ['nomineeName', 'nomineeContactNumber', 'nomineeDOB', 'nomineeRelationship', 'nomineePercentageStake'];
       default:
         return [];
     }

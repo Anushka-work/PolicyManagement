@@ -262,6 +262,22 @@
             <span *ngIf="f['totalIncome'].errors?.['min']">Must be greater than 0</span>
           </small>
         </div>
+
+        <div class="form-field">
+          <label for="premiumAmount">Premium Amount <span class="required">*</span></label>
+          <p-inputNumber 
+            formControlName="premiumAmount"
+            inputId="premiumAmount"
+            mode="currency"
+            currency="USD"
+            locale="en-US"
+            placeholder="Enter premium amount">
+          </p-inputNumber>
+          <small class="error-text" *ngIf="f['premiumAmount'].invalid && (f['premiumAmount'].dirty || f['premiumAmount'].touched)">
+            <span *ngIf="f['premiumAmount'].errors?.['required']">Premium amount is required</span>
+            <span *ngIf="f['premiumAmount'].errors?.['min']">Must be greater than 0</span>
+          </small>
+        </div>
       </div>
     </div>
 
@@ -332,6 +348,23 @@
           </p-dropdown>
           <small class="error-text" *ngIf="f['nomineeRelationship'].invalid && (f['nomineeRelationship'].dirty || f['nomineeRelationship'].touched)">
             Relationship is required
+          </small>
+        </div>
+
+        <div class="form-field">
+          <label for="nomineePercentageStake">Nominee Percentage Stake (%) <span class="required">*</span></label>
+          <p-inputNumber 
+            formControlName="nomineePercentageStake"
+            inputId="nomineePercentageStake"
+            [min]="0"
+            [max]="100"
+            suffix="%"
+            placeholder="Enter percentage (0-100)">
+          </p-inputNumber>
+          <small class="error-text" *ngIf="f['nomineePercentageStake'].invalid && (f['nomineePercentageStake'].dirty || f['nomineePercentageStake'].touched)">
+            <span *ngIf="f['nomineePercentageStake'].errors?.['required']">Percentage stake is required</span>
+            <span *ngIf="f['nomineePercentageStake'].errors?.['min']">Must be at least 0%</span>
+            <span *ngIf="f['nomineePercentageStake'].errors?.['max']">Cannot exceed 100%</span>
           </small>
         </div>
       </div>
