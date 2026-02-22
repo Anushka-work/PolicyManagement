@@ -15,6 +15,10 @@ export class ClaimService {
     return this.http.get<Claim[]>(`${this.apiUrl}/`);
   }
 
+  getClaimsByUser(userId: number): Observable<Claim[]> {
+    return this.http.get<Claim[]>(`${this.apiUrl}/user/${userId}`);
+  }
+
   getClaimById(id: number): Observable<Claim> {
     return this.getAllClaims().pipe(
       map((claims) => {
@@ -37,5 +41,13 @@ export class ClaimService {
 
   deleteClaim(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  approveClaim(id: number): Observable<Claim> {
+    return this.http.put<Claim>(`${this.apiUrl}/approve/${id}`, {});
+  }
+
+  rejectClaim(id: number): Observable<Claim> {
+    return this.http.put<Claim>(`${this.apiUrl}/reject/${id}`, {});
   }
 }

@@ -26,7 +26,20 @@ export class ClaimListComponent implements OnInit {
 
   loadClaims(): void {
     this.loading = true;
-    this.claimService.getAllClaims().subscribe({
+    const currentUser = this.authService.currentUserValue;
+    
+    if (!currentUser || !currentUser.id) {
+      this.errorMessage = 'User not authenticated';
+      this.loading = false;
+      return;
+    }
+
+    // Superusers and approvers can see all claims, regular users see only their own
+    const claimsObservable = (this.authService.isSuperUser() || this.authService.isApprover())
+      ? this.claimService.getAllClaims()
+      : this.claimService.getClaimsByUser(currentUser.id);
+
+    claimsObservable.subscribe({
       next: (claims) => {
         this.claims = claims;
         this.loading = false;
@@ -56,6 +69,34 @@ export class ClaimListComponent implements OnInit {
         error: (error) => {
           this.errorMessage = 'Failed to delete claim';
           console.error('Error deleting claim:', error);
+        }
+      });
+    }
+  }
+
+  approveClaim(id: number): void {
+    if (confirm('Are you sure you want to approve this claim?')) {
+      this.claimService.approveClaim(id).subscribe({
+        next: () => {
+          this.loadClaims();
+        },
+        error: (error) => {
+          this.errorMessage = 'Failed to approve claim';
+          console.error('Error approving claim:', error);
+        }
+      });
+    }
+  }
+
+  rejectClaim(id: number): void {
+    if (confirm('Are you sure you want to reject this claim?')) {
+      this.claimService.rejectClaim(id).subscribe({
+        next: () => {
+          this.loadClaims();
+        },
+        error: (error) => {
+          this.errorMessage = 'Failed to reject claim';
+          console.error('Error rejecting claim:', error);
         }
       });
     }

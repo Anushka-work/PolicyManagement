@@ -19,4 +19,5 @@ export interface Policy {
   nomineeContactNumber?: string;
   nomineeDOB?: string;
   nomineeRelationship?: string;
+  nomineePercentageStake?: string;
 }

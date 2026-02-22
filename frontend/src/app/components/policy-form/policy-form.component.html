@@ -4,12 +4,17 @@
     <p class="subtitle">{{ isViewMode ? 'Policy information (read-only)' : (isEditMode ? 'Update policy information' : 'Fill in the details to create a new policy') }}</p>
   </div>
 
+  <!-- Step Navigator -->
+  <div class="steps-container" *ngIf="!isViewMode">
+    <p-steps [model]="steps" [(activeIndex)]="currentStep" [readonly]="true"></p-steps>
+  </div>
+
   <p-message *ngIf="errorMessage" severity="error" [text]="errorMessage" styleClass="error-message"></p-message>
 
   <form [formGroup]="policyForm" (ngSubmit)="onSubmit()">
     
     <!-- Step 1: Policy Information -->
-    <div class="form-section">
+    <div class="form-section" *ngIf="currentStep === 0 || isViewMode">
       <div class="section-header">
         <div class="step-indicator">
           <span class="step-number">1</span>
@@ -20,6 +25,26 @@
         </div>
       </div>
       <div class="form-grid">
+        <!-- User Selection (SUPERUSER only, Create mode only) -->
+        <div class="form-field full-width" *ngIf="authService.isSuperUser() && !isEditMode && !isViewMode">
+          <label for="userId">Select User <span class="required">*</span></label>
+          <p-dropdown 
+            formControlName="userId"
+            inputId="userId"
+            [options]="users"
+            optionLabel="label"
+            optionValue="value"
+            [filter]="true"
+            filterBy="label"
+            placeholder="Select user to create policy for"
+            [disabled]="loadingUsers">
+          </p-dropdown>
+          <small *ngIf="loadingUsers" class="info-text">Loading users...</small>
+          <small class="error-text" *ngIf="f['userId'] && f['userId'].invalid && (f['userId'].dirty || f['userId'].touched)">
+            Please select a user
+          </small>
+        </div>
+
         <div class="form-field">
           <label for="planType">Plan Type <span class="required">*</span></label>
           <p-dropdown 
@@ -126,7 +151,7 @@
     </div>
 
     <!-- Step 2: Policy Holder Information -->
-    <div class="form-section">
+    <div class="form-section" *ngIf="currentStep === 1 || isViewMode">
       <div class="section-header">
         <div class="step-indicator">
           <span class="step-number">2</span>
@@ -198,7 +223,7 @@
     </div>
 
     <!-- Step 3: Income Information -->
-    <div class="form-section">
+    <div class="form-section" *ngIf="currentStep === 2 || isViewMode">
       <div class="section-header">
         <div class="step-indicator">
           <span class="step-number">3</span>
@@ -237,11 +262,27 @@
             <span *ngIf="f['totalIncome'].errors?.['min']">Must be greater than 0</span>
           </small>
         </div>
+
+        <div class="form-field">
+          <label for="premiumAmount">Premium Amount <span class="required">*</span></label>
+          <p-inputNumber 
+            formControlName="premiumAmount"
+            inputId="premiumAmount"
+            mode="currency"
+            currency="USD"
+            locale="en-US"
+            placeholder="Enter premium amount">
+          </p-inputNumber>
+          <small class="error-text" *ngIf="f['premiumAmount'].invalid && (f['premiumAmount'].dirty || f['premiumAmount'].touched)">
+            <span *ngIf="f['premiumAmount'].errors?.['required']">Premium amount is required</span>
+            <span *ngIf="f['premiumAmount'].errors?.['min']">Must be greater than 0</span>
+          </small>
+        </div>
       </div>
     </div>
 
     <!-- Step 4: Nominee Information -->
-    <div class="form-section">
+    <div class="form-section" *ngIf="currentStep === 3 || isViewMode">
       <div class="section-header">
         <div class="step-indicator">
           <span class="step-number">4</span>
@@ -309,6 +350,23 @@
             Relationship is required
           </small>
         </div>
+
+        <div class="form-field">
+          <label for="nomineePercentageStake">Nominee Percentage Stake (%) <span class="required">*</span></label>
+          <p-inputNumber 
+            formControlName="nomineePercentageStake"
+            inputId="nomineePercentageStake"
+            [min]="0"
+            [max]="100"
+            suffix="%"
+            placeholder="Enter percentage (0-100)">
+          </p-inputNumber>
+          <small class="error-text" *ngIf="f['nomineePercentageStake'].invalid && (f['nomineePercentageStake'].dirty || f['nomineePercentageStake'].touched)">
+            <span *ngIf="f['nomineePercentageStake'].errors?.['required']">Percentage stake is required</span>
+            <span *ngIf="f['nomineePercentageStake'].errors?.['min']">Must be at least 0%</span>
+            <span *ngIf="f['nomineePercentageStake'].errors?.['max']">Cannot exceed 100%</span>
+          </small>
+        </div>
       </div>
     </div>
 
@@ -321,14 +379,35 @@
         (click)="cancel()"
         icon="pi pi-times">
       </p-button>
-      <p-button 
-        *ngIf="!isViewMode"
-        type="submit" 
-        [label]="loading ? 'Saving...' : (isEditMode ? 'Update Policy' : 'Create Policy')" 
-        [disabled]="loading || policyForm.invalid"
-        [loading]="loading"
-        icon="pi pi-check">
-      </p-button>
+      
+      <div class="step-navigation" *ngIf="!isViewMode">
+        <p-button 
+          *ngIf="currentStep > 0"
+          type="button" 
+          label="Previous" 
+          severity="secondary"
+          (click)="previousStep()"
+          icon="pi pi-angle-left">
+        </p-button>
+        
+        <p-button 
+          *ngIf="currentStep < 3"
+          type="button" 
+          label="Next" 
+          (click)="nextStep()"
+          icon="pi pi-angle-right"
+          iconPos="right">
+        </p-button>
+        
+        <p-button 
+          *ngIf="currentStep === 3"
+          type="submit" 
+          [label]="loading ? 'Saving...' : (isEditMode ? 'Update Policy' : 'Create Policy')" 
+          [disabled]="loading || policyForm.invalid"
+          [loading]="loading"
+          icon="pi pi-check">
+        </p-button>
+      </div>
     </div>
   </form>
 </div>
