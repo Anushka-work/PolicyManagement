@@ -1,11 +1,10 @@
+<p-toast></p-toast>
+
 <div class="login-form-wrapper">
   <div class="text-center mb-4">
     <h2 class="m-0">Policy Management System</h2>
     <h4 class="m-0">Login</h4>
   </div>
-
-  <p-message *ngIf="errorMessage" severity="error" [text]="errorMessage" class="mb-4"></p-message>
-  <p-message *ngIf="successMessage" severity="success" [text]="successMessage" class="mb-4"></p-message>
 
   <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="mt-4">
     <div class="field mb-3">

@@ -1,78 +1,39 @@
-<div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
+<p-toast></p-toast>
+
+<div class="container">
+  <div class="header-section">
     <h2>{{ authService.canApproveClaim() ? 'Claims - Approval Queue' : 'My Claims' }}</h2>
-    <!-- Only USER can create new claims -->
-    <button class="btn btn-primary" (click)="createClaim()" *ngIf="authService.canApplyClaim()">
-      + Apply New Claim
-    </button>
+    <p-button label="Apply New Claim" icon="pi pi-plus" (onClick)="createClaim()" *ngIf="authService.canApplyClaim()"></p-button>
   </div>
 
-  <div *ngIf="errorMessage" class="alert alert-danger">
-    {{ errorMessage }}
-  </div>
-
-  <div *ngIf="loading" class="text-center">
-    <p>Loading claims...</p>
-  </div>
-
-  <div *ngIf="!loading && claims.length === 0" class="alert alert-info">
-    No claims found. Click "Add New Claim" to create one.
-  </div>
-
-  <div *ngIf="!loading && claims.length > 0" class="card">
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-striped table-hover">
-          <thead>
-            <tr>
-              <th>Claim ID</th>
-              <th>User ID</th>
-              <th>Claim Amount</th>
-              <th>Claim Type</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let claim of claims">
-              <td>{{ claim.id }}</td>
-              <td>{{ claim.userId }}</td>
-              <td>₹{{ claim.claimAmount }}</td>
-              <td>{{ claim.claimType }}</td>
-              <td>
-                <span class="badge" [ngClass]="{
-                  'bg-success': claim.status === 'APPROVED',
-                  'bg-danger': claim.status === 'REJECTED',
-                  'bg-warning': claim.status === 'PENDING'
-                }">
-                  {{ claim.status }}
-                </span>
-              </td>
-              <td>
-                <!-- USER can edit their own claims -->
-                <button class="btn btn-sm btn-info me-2" (click)="editClaim(claim.id!)" *ngIf="authService.canApplyClaim()">
-                  Edit
-                </button>
-                <!-- USER can delete their own claims -->
-                <button class="btn btn-sm btn-danger me-2" (click)="deleteClaim(claim.id!)" *ngIf="authService.canApplyClaim()">
-                  Delete
-                </button>
-                <!-- APPROVER can approve/reject claims -->
-                <button class="btn btn-sm btn-success me-2" (click)="approveClaim(claim.id!)" *ngIf="authService.canApproveClaim() && claim.status === 'PENDING'">
-                  Approve
-                </button>
-                <button class="btn btn-sm btn-danger" (click)="rejectClaim(claim.id!)" *ngIf="authService.canApproveClaim() && claim.status === 'PENDING'">
-                  Reject
-                </button>
-                <!-- View details for approved claims -->
-                <button class="btn btn-sm btn-secondary" *ngIf="claim.status !== 'PENDING'">
-                  View Details
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+  <p-table [value]="claims" [loading]="loading" [rowHover]="true" styleClass="p-datatable-striped">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Claim ID</th>
+        <th>User ID</th>
+        <th>Claim Amount</th>
+        <th>Claim Type</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-claim>
+      <tr>
+        <td>{{ claim.id }}</td>
+        <td>{{ claim.userId }}</td>
+        <td>₹{{ claim.claimAmount }}</td>
+        <td>{{ claim.claimType }}</td>
+        <td><span class="status-badge status-{{ claim.status.toLowerCase() }}">{{ claim.status }}</span></td>
+        <td>
+          <p-button icon="pi pi-pencil" styleClass="p-button-sm p-button-info" (onClick)="editClaim(claim.id!)" *ngIf="authService.canApplyClaim()"></p-button>
+          <p-button icon="pi pi-trash" styleClass="p-button-sm p-button-danger ml-2" (onClick)="deleteClaim(claim.id!)" *ngIf="authService.canApplyClaim()"></p-button>
+          <p-button icon="pi pi-check" styleClass="p-button-sm p-button-success ml-2" (onClick)="approveClaim(claim.id!)" *ngIf="authService.canApproveClaim() && claim.status === 'PENDING'"></p-button>
+          <p-button icon="pi pi-times" styleClass="p-button-sm p-button-danger ml-2" (onClick)="rejectClaim(claim.id!)" *ngIf="authService.canApproveClaim() && claim.status === 'PENDING'"></p-button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr><td colspan="6" class="text-center">No claims found.</td></tr>
+    </ng-template>
+  </p-table>
 </div>

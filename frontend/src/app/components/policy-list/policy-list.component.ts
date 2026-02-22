@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { PolicyService } from '../../services/policy.service';
 import { AuthService } from '../../services/auth.service';
 import { Policy } from '../../models/policy.model';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-policy-list',
@@ -12,12 +13,12 @@ import { Policy } from '../../models/policy.model';
 export class PolicyListComponent implements OnInit {
   policies: Policy[] = [];
   loading: boolean = false;
-  errorMessage: string = '';
 
   constructor(
     private policyService: PolicyService,
     private router: Router,
-    public authService: AuthService
+    public authService: AuthService,
+    private messageService: MessageService
   ) { }
 
   ngOnInit(): void {
@@ -29,7 +30,7 @@ export class PolicyListComponent implements OnInit {
     const currentUser = this.authService.currentUserValue;
     
     if (!currentUser || !currentUser.id) {
-      this.errorMessage = 'User not authenticated';
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'User not authenticated' });
       this.loading = false;
       return;
     }
@@ -45,7 +46,7 @@ export class PolicyListComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        this.errorMessage = 'Failed to load policies';
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load policies' });
         this.loading = false;
         console.error('Error loading policies:', error);
       }
@@ -64,10 +65,11 @@ export class PolicyListComponent implements OnInit {
     if (confirm('Are you sure you want to delete this policy?')) {
       this.policyService.deletePolicy(id).subscribe({
         next: () => {
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Policy deleted successfully' });
           this.loadPolicies();
         },
         error: (error) => {
-          this.errorMessage = 'Failed to delete policy';
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete policy' });
           console.error('Error deleting policy:', error);
         }
       });
