@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ClaimService } from '../../services/claim.service';
 import { AuthService } from '../../services/auth.service';
 import { Claim } from '../../models/claim.model';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-claim-list',
@@ -12,12 +13,12 @@ import { Claim } from '../../models/claim.model';
 export class ClaimListComponent implements OnInit {
   claims: Claim[] = [];
   loading: boolean = false;
-  errorMessage: string = '';
 
   constructor(
     private claimService: ClaimService,
     private router: Router,
-    public authService: AuthService
+    public authService: AuthService,
+    private messageService: MessageService
   ) { }
 
   ngOnInit(): void {
@@ -29,7 +30,7 @@ export class ClaimListComponent implements OnInit {
     const currentUser = this.authService.currentUserValue;
     
     if (!currentUser || !currentUser.id) {
-      this.errorMessage = 'User not authenticated';
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'User not authenticated' });
       this.loading = false;
       return;
     }
@@ -45,7 +46,7 @@ export class ClaimListComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        this.errorMessage = 'Failed to load claims';
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load claims' });
         this.loading = false;
         console.error('Error loading claims:', error);
       }
@@ -64,10 +65,11 @@ export class ClaimListComponent implements OnInit {
     if (confirm('Are you sure you want to delete this claim?')) {
       this.claimService.deleteClaim(id).subscribe({
         next: () => {
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Claim deleted successfully' });
           this.loadClaims();
         },
         error: (error) => {
-          this.errorMessage = 'Failed to delete claim';
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete claim' });
           console.error('Error deleting claim:', error);
         }
       });
@@ -78,10 +80,11 @@ export class ClaimListComponent implements OnInit {
     if (confirm('Are you sure you want to approve this claim?')) {
       this.claimService.approveClaim(id).subscribe({
         next: () => {
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Claim approved successfully' });
           this.loadClaims();
         },
         error: (error) => {
-          this.errorMessage = 'Failed to approve claim';
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to approve claim' });
           console.error('Error approving claim:', error);
         }
       });
@@ -92,10 +95,11 @@ export class ClaimListComponent implements OnInit {
     if (confirm('Are you sure you want to reject this claim?')) {
       this.claimService.rejectClaim(id).subscribe({
         next: () => {
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Claim rejected successfully' });
           this.loadClaims();
         },
         error: (error) => {
-          this.errorMessage = 'Failed to reject claim';
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to reject claim' });
           console.error('Error rejecting claim:', error);
         }
       });

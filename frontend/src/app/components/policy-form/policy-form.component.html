@@ -4,12 +4,12 @@
     <p class="subtitle">{{ isViewMode ? 'Policy information (read-only)' : (isEditMode ? 'Update policy information' : 'Fill in the details to create a new policy') }}</p>
   </div>
 
+  <p-toast></p-toast>
+
   <!-- Step Navigator -->
   <div class="steps-container" *ngIf="!isViewMode">
     <p-steps [model]="steps" [(activeIndex)]="currentStep" [readonly]="true"></p-steps>
   </div>
-
-  <p-message *ngIf="errorMessage" severity="error" [text]="errorMessage" styleClass="error-message"></p-message>
 
   <form [formGroup]="policyForm" (ngSubmit)="onSubmit()">
     
@@ -115,7 +115,8 @@
             placeholder="Select date">
           </p-calendar>
           <small class="error-text" *ngIf="f['issuanceDate'].invalid && (f['issuanceDate'].dirty || f['issuanceDate'].touched)">
-            Issuance date is required
+            <span *ngIf="f['issuanceDate'].errors?.['required']">Issuance date is required</span>
+            <span *ngIf="f['issuanceDate'].errors?.['futureDateError']">Issuance date cannot be in the future</span>
           </small>
         </div>
 
@@ -129,7 +130,8 @@
             placeholder="Select date">
           </p-calendar>
           <small class="error-text" *ngIf="f['maturityDate'].invalid && (f['maturityDate'].dirty || f['maturityDate'].touched)">
-            Maturity date is required
+            <span *ngIf="f['maturityDate'].errors?.['required']">Maturity date is required</span>
+            <span *ngIf="f['maturityDate'].errors?.['maturityBeforeIssuance']">Maturity date must be after issuance date</span>
           </small>
         </div>
 

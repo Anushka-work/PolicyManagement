@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ClaimService } from '../../services/claim.service';
 import { AuthService } from '../../services/auth.service';
 import { Claim } from '../../models/claim.model';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-claim-form',
@@ -37,7 +38,8 @@ export class ClaimFormComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private messageService: MessageService
   ) { }
 
   ngOnInit(): void {
@@ -65,7 +67,7 @@ export class ClaimFormComponent implements OnInit {
         this.claimForm.patchValue(claim);
       },
       error: (error) => {
-        this.errorMessage = 'Failed to load claim';
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load claim' });
         console.error('Error loading claim:', error);
       }
     });
@@ -92,7 +94,7 @@ export class ClaimFormComponent implements OnInit {
         },
         error: (error) => {
           this.loading = false;
-          this.errorMessage = 'Failed to update claim';
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to update claim' });
           console.error('Error updating claim:', error);
         }
       });
@@ -100,7 +102,7 @@ export class ClaimFormComponent implements OnInit {
       const userId = this.authService.currentUserValue?.id;
       if (!userId) {
         this.loading = false;
-        this.errorMessage = 'Please log in before applying for a claim';
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please log in before applying for a claim' });
         return;
       }
       this.claimService.createClaim(formValue, userId).subscribe({
@@ -110,7 +112,7 @@ export class ClaimFormComponent implements OnInit {
         },
         error: (error) => {
           this.loading = false;
-          this.errorMessage = 'Failed to create claim';
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to create claim' });
           console.error('Error creating claim:', error);
         }
       });

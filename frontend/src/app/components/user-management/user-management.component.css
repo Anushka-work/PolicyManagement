@@ -1,116 +1,29 @@
-.user-management-container {
+.container {
   padding: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
 }
 
-.header {
+.header-section {
   margin-bottom: 2rem;
 }
 
-.header h2 {
-  color: #212529;
-  font-size: 1.75rem;
-  font-weight: 600;
-  margin: 0 0 0.5rem 0;
-}
-
-.subtitle {
-  color: #6c757d;
-  font-size: 1rem;
-  margin: 0;
-}
-
-.content-card {
-  background: white;
-  border-radius: 4px;
-  border: 1px solid #dee2e6;
-  padding: 1.5rem;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 0.5rem;
-}
-
 .role-badge {
-  padding: 0.35rem 0.65rem;
+  padding: 0.25rem 0.5rem;
   border-radius: 4px;
   font-size: 0.85rem;
-  font-weight: 500;
-  text-transform: uppercase;
 }
 
-.role-badge.superuser {
-  background: #6f42c1;
-  color: white;
-}
-
-.role-badge.approver {
-  background: #fd7e14;
-  color: white;
-}
-
-.role-badge.user {
-  background: #17a2b8;
-  color: white;
-}
-
-.role-badge.readonly {
-  background: #6c757d;
-  color: white;
-}
+.role-superuser { background: #6f42c1; color: white; }
+.role-approver { background: #fd7e14; color: white; }
+.role-user { background: #17a2b8; color: white; }
+.role-readonly { background: #6c757d; color: white; }
 
 .status-badge {
-  padding: 0.35rem 0.65rem;
+  padding: 0.25rem 0.5rem;
   border-radius: 4px;
   font-size: 0.85rem;
-  font-weight: 500;
-  text-transform: uppercase;
 }
 
-.status-badge.active {
-  background-color: #d4edda;
-  color: #155724;
-}
+.status-active { background-color: #d4edda; color: #155724; }
+.status-inactive { background-color: #f8d7da; color: #721c24; }
 
-.status-badge.inactive {
-  background-color: #f8d7da;
-  color: #721c24;
-}
-
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 2rem;
-  gap: 1rem;
-}
-
-.text-center {
-  text-align: center;
-  padding: 2rem;
-  color: #6c757d;
-}
-
-::ng-deep .p-datatable .p-datatable-thead > tr > th {
-  background: #1e7e34;
-  color: white;
-  font-weight: 600;
-  padding: 0.75rem;
-}
-
-::ng-deep .p-datatable .p-datatable-tbody > tr > td {
-  padding: 0.75rem;
-}
-
-@media (max-width: 768px) {
-  .user-management-container {
-    padding: 1rem;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-  }
-}
+.text-center { text-align: center; padding: 2rem; }

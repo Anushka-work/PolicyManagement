@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { User, UserRole } from '../../models/user.model';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-register',
@@ -24,7 +25,8 @@ export class RegisterComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private messageService: MessageService
   ) { }
 
   ngOnInit(): void {
@@ -54,7 +56,7 @@ export class RegisterComponent implements OnInit {
     this.successMessage = '';
 
     if (this.registerForm.invalid) {
-      this.errorMessage = 'Please fill in all required fields correctly';
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill in all required fields correctly' });
       return;
     }
 
@@ -66,14 +68,14 @@ export class RegisterComponent implements OnInit {
     this.authService.register(user).subscribe({
       next: (response) => {
         this.loading = false;
-        this.successMessage = 'Registration successful! Redirecting to login...';
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Registration successful! Redirecting to login...' });
         setTimeout(() => {
           this.router.navigate(['/login']);
         }, 2000);
       },
       error: (error) => {
         this.loading = false;
-        this.errorMessage = 'Registration failed. Username or email may already exist.';
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Registration failed. Username or email may already exist.' });
         console.error('Registration error:', error);
       }
     });

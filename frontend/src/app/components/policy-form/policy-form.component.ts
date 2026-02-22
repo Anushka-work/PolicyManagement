@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PolicyService } from '../../services/policy.service';
 import { AuthService } from '../../services/auth.service';
 import { Policy } from '../../models/policy.model';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-policy-form',
@@ -64,7 +65,8 @@ export class PolicyFormComponent implements OnInit {
     public authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private messageService: MessageService
   ) { }
 
   ngOnInit(): void {
@@ -81,7 +83,7 @@ export class PolicyFormComponent implements OnInit {
     // Check if user has permission to create/edit policies
     // Allow view mode for all authenticated users
     if (!this.isViewMode && !this.authService.canCreatePolicy()) {
-      this.errorMessage = 'Access Denied: Only SUPERUSER can create or edit policies';
+      this.messageService.add({ severity: 'error', summary: 'Access Denied', detail: 'Only SUPERUSER can create or edit policies' });
       setTimeout(() => {
         this.router.navigate(['/policies']);
       }, 2000);
@@ -116,7 +118,7 @@ export class PolicyFormComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading users:', error);
-        this.errorMessage = 'Failed to load users';
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load users' });
         this.loadingUsers = false;
       }
     });
@@ -129,7 +131,7 @@ export class PolicyFormComponent implements OnInit {
       tenure: ['', [Validators.required, Validators.min(1)]],
       premiumFrequency: ['', [Validators.required]],
       insuredAmount: ['', [Validators.required, Validators.min(0)]],
-      issuanceDate: ['', [Validators.required]],
+      issuanceDate: ['', [Validators.required, this.issuanceDateValidator.bind(this)]],
       maturityDate: ['', [Validators.required]],
       policyHolderName: ['', [Validators.required, Validators.minLength(3)]],
       dob: ['', [Validators.required]],
@@ -144,12 +146,56 @@ export class PolicyFormComponent implements OnInit {
       nomineeDOB: ['', [Validators.required]],
       nomineeRelationship: ['', [Validators.required]],
       nomineePercentageStake: ['', [Validators.required, Validators.min(0), Validators.max(100)]]
+    }, { 
+      validators: this.maturityDateValidator.bind(this)
     });
     
     // Disable policyStatus in create mode
     if (!this.isEditMode) {
       this.policyForm.get('policyStatus')?.disable();
     }
+  }
+
+  // Validator to check if issuance date is not in the future
+  issuanceDateValidator(control: any): {[key: string]: any} | null {
+    if (!control.value) {
+      return null;
+    }
+    const issuanceDate = new Date(control.value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (issuanceDate > today) {
+      return { 'futureDateError': true };
+    }
+    return null;
+  }
+
+  // Validator to check if maturity date is after issuance date
+  maturityDateValidator(form: any): {[key: string]: any} | null {
+    const issuanceDateControl = form.get('issuanceDate');
+    const maturityDateControl = form.get('maturityDate');
+    
+    if (!issuanceDateControl || !maturityDateControl || !issuanceDateControl.value || !maturityDateControl.value) {
+      return null;
+    }
+    
+    const issuanceDate = new Date(issuanceDateControl.value);
+    const maturityDate = new Date(maturityDateControl.value);
+    
+    if (maturityDate <= issuanceDate) {
+      maturityDateControl.setErrors({ 'maturityBeforeIssuance': true });
+      return { 'maturityBeforeIssuance': true };
+    } else {
+      // Clear this specific error if it exists, but keep other errors
+      if (maturityDateControl.errors) {
+        delete maturityDateControl.errors['maturityBeforeIssuance'];
+        if (Object.keys(maturityDateControl.errors).length === 0) {
+          maturityDateControl.setErrors(null);
+        }
+      }
+    }
+    return null;
   }
 
   loadPolicy(id: number): void {
@@ -167,17 +213,15 @@ export class PolicyFormComponent implements OnInit {
         }
       },
       error: (error) => {
-        this.errorMessage = 'Failed to load policy';
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load policy' });
         console.error('Error loading policy:', error);
       }
     });
   }
 
   onSubmit(): void {
-    this.errorMessage = '';
-
     if (this.policyForm.invalid) {
-      this.errorMessage = 'Please fill in all required fields correctly';
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill in all required fields correctly' });
       // Mark all fields as touched to show validation errors
       Object.keys(this.policyForm.controls).forEach(key => {
         this.policyForm.get(key)?.markAsTouched();
@@ -201,7 +245,7 @@ export class PolicyFormComponent implements OnInit {
         },
         error: (error) => {
           this.loading = false;
-          this.errorMessage = 'Failed to update policy';
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to create policy' });
           console.error('Error updating policy:', error);
         }
       });

@@ -1,72 +1,40 @@
-<div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
+<p-toast></p-toast>
+
+<div class="container">
+  <div class="header-section">
     <h2>Policy Management</h2>
-    <!-- Only SUPERUSER can create policies -->
-    <button class="btn btn-primary" (click)="createPolicy()" *ngIf="authService.canCreatePolicy()">
-      + Add New Policy
-    </button>
+    <p-button label="Add New Policy" icon="pi pi-plus" (onClick)="createPolicy()" *ngIf="authService.canCreatePolicy()"></p-button>
   </div>
 
-  <div *ngIf="errorMessage" class="alert alert-danger">
-    {{ errorMessage }}
-  </div>
-
-  <div *ngIf="loading" class="text-center">
-    <p>Loading policies...</p>
-  </div>
-
-  <div *ngIf="!loading && policies.length === 0" class="alert alert-info">
-    No policies found. Click "Add New Policy" to create one.
-  </div>
-
-  <div *ngIf="!loading && policies.length > 0" class="card">
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-striped table-hover">
-          <thead>
-            <tr>
-              <th>Plan Type</th>
-              <th>Holder Name</th>
-              <th>Insured Amount</th>
-              <th>Premium Amount</th>
-              <th>Issuance Date</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let policy of policies">
-              <td>{{ policy.planType }}</td>
-              <td>{{ policy.policyHolderName }}</td>
-              <td>₹{{ policy.insuredAmount }}</td>
-              <td>₹{{ policy.premiumAmount }}</td>
-              <td>{{ policy.issuanceDate | date:'mediumDate' }}</td>
-              <td>
-                <span class="badge" [ngClass]="{
-                  'bg-success': policy.policyStatus === 'ACTIVE',
-                  'bg-danger': policy.policyStatus === 'INACTIVE',
-                  'bg-warning': policy.policyStatus === 'PENDING_APPROVAL'
-                }">
-                  {{ policy.policyStatus }}
-                </span>
-              </td>
-              <td>
-                <!-- All roles can view policy details -->
-                <button class="btn btn-sm btn-secondary me-2" (click)="viewPolicy(policy.id!)">
-                  View Details
-                </button>
-                <!-- Only SUPERUSER can edit/delete policies -->
-                <button class="btn btn-sm btn-info me-2" (click)="editPolicy(policy.id!)" *ngIf="authService.canCreatePolicy()">
-                  Edit
-                </button>
-                <button class="btn btn-sm btn-danger" (click)="deletePolicy(policy.id!)" *ngIf="authService.canCreatePolicy()">
-                  Delete
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+  <p-table [value]="policies" [loading]="loading" [rowHover]="true" styleClass="p-datatable-striped">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Plan Type</th>
+        <th>Holder Name</th>
+        <th>Insured Amount</th>
+        <th>Premium Amount</th>
+        <th>Issuance Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-policy>
+      <tr>
+        <td>{{ policy.planType }}</td>
+        <td>{{ policy.policyHolderName }}</td>
+        <td>₹{{ policy.insuredAmount }}</td>
+        <td>₹{{ policy.premiumAmount }}</td>
+        <td>{{ policy.issuanceDate | date:'mediumDate' }}</td>
+        <td><span class="status-badge status-{{ policy.policyStatus.toLowerCase() }}">{{ policy.policyStatus }}</span></td>
+        <td>
+          <p-button icon="pi pi-eye" styleClass="p-button-sm p-button-info" (onClick)="viewPolicy(policy.id!)"></p-button>
+          <p-button icon="pi pi-pencil" styleClass="p-button-sm p-button-success ml-2" (onClick)="editPolicy(policy.id!)" *ngIf="authService.canCreatePolicy()"></p-button>
+          <p-button icon="pi pi-trash" styleClass="p-button-sm p-button-danger ml-2" (onClick)="deletePolicy(policy.id!)" *ngIf="authService.canCreatePolicy()"></p-button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr><td colspan="7" class="text-center">No policies found.</td></tr>
+    </ng-template>
+  </p-table>
 </div>

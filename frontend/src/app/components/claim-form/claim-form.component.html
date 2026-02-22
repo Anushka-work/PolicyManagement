@@ -1,12 +1,7 @@
 <div class="container-fluid p-6">
+  <p-toast></p-toast>
+  
   <p-card>
-    <ng-template pTemplate="header">
-      <div>
-        <h2 class="m-0">{{ isEditMode ? 'Edit Claim' : 'Add New Claim' }}</h2>
-      </div>
-    </ng-template>
-
-    <p-message *ngIf="errorMessage" severity="error" [text]="errorMessage" class="mb-4"></p-message>
 
     <form [formGroup]="claimForm" (ngSubmit)="onSubmit()" class="mt-4">
       <div class="grid">

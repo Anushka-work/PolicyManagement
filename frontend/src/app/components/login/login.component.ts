@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-login',
@@ -17,29 +18,11 @@ export class LoginComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private messageService: MessageService
   ) {
     if (this.authService.isLoggedIn()) {
-      const currentUser = this.authService.currentUserValue;
-      const userRole = currentUser?.role?.toLowerCase() || 'user';
-      
-      switch(userRole) {
-        case 'admin':
-          this.router.navigate(['/dashboard/admin']);
-          break;
-        case 'super-user':
-        case 'superuser':
-          this.router.navigate(['/dashboard/superuser']);
-          break;
-        case 'read-only':
-        case 'readonly':
-          this.router.navigate(['/dashboard/readonly']);
-          break;
-        case 'user':
-        default:
-          this.router.navigate(['/dashboard/user']);
-          break;
-      }
+      this.router.navigate(['/dashboard']);
     }
   }
 
@@ -54,7 +37,7 @@ export class LoginComponent implements OnInit {
     this.errorMessage = '';
 
     if (this.loginForm.invalid) {
-      this.errorMessage = 'Please fill in all required fields';
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill in all required fields' });
       return;
     }
 
@@ -65,31 +48,14 @@ export class LoginComponent implements OnInit {
     this.authService.login(username, password).subscribe({
       next: (response) => {
         this.loading = false;
-        this.successMessage = 'Login successful';
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Login successful' });
         
-        // Route based on user role
-        const userRole = response.role?.toLowerCase() || 'user';
-        switch(userRole) {
-          case 'admin':
-            this.router.navigate(['/dashboard/admin']);
-            break;
-          case 'super-user':
-          case 'superuser':
-            this.router.navigate(['/dashboard/superuser']);
-            break;
-          case 'read-only':
-          case 'readonly':
-            this.router.navigate(['/dashboard/readonly']);
-            break;
-          case 'user':
-          default:
-            this.router.navigate(['/dashboard/user']);
-            break;
-        }
+        // Navigate to dashboard
+        this.router.navigate(['/dashboard']);
       },
       error: (error) => {
         this.loading = false;
-        this.errorMessage = 'Invalid username or password';
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid username or password' });
         console.error('Login error:', error);
       }
     });

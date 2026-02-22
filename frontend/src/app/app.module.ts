@@ -19,6 +19,8 @@ import { AccordionModule } from 'primeng/accordion';
 import { CalendarModule } from 'primeng/calendar';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { StepsModule } from 'primeng/steps';
+import { TooltipModule } from 'primeng/tooltip';
+import { MessageService } from 'primeng/api';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -66,9 +68,10 @@ import { UserManagementComponent } from './components/user-management/user-manag
     AccordionModule,
     CalendarModule,
     ProgressSpinnerModule,
-    StepsModule
+    StepsModule,
+    TooltipModule
   ],
-  providers: [],
+  providers: [MessageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
