@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
 import { User, UserRole } from '../models/user.model';
 
@@ -10,32 +9,23 @@ import { User, UserRole } from '../models/user.model';
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api/auth';
-  private currentUserSubject: BehaviorSubject<User | null>;
-  public currentUser: Observable<User | null>;
+  private readonly STORAGE_KEY = 'currentUser';
 
-  constructor(private http: HttpClient) {
-    const storedUser = localStorage.getItem('currentUser');
-    this.currentUserSubject = new BehaviorSubject<User | null>(
-      storedUser ? JSON.parse(storedUser) : null
-    );
-    this.currentUser = this.currentUserSubject.asObservable();
-  }
+  constructor(private http: HttpClient) { }
 
   public get currentUserValue(): User | null {
-    return this.currentUserSubject.value;
+    const storedUser = localStorage.getItem(this.STORAGE_KEY);
+    return storedUser ? JSON.parse(storedUser) : null;
   }
 
   login(username: string, password: string): Observable<User> {
     const params = new HttpParams().set('username', username).set('password', password);
-    return this.http.post<User>(`${this.apiUrl}/login`, null, { params })
-      .pipe(
-        tap(user => {
-          if (user) {
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            this.currentUserSubject.next(user);
-          }
-        })
-      );
+    return this.http.post<User>(`${this.apiUrl}/login`, null, { params });
+  }
+
+  // Save user after successful login
+  saveCurrentUser(user: User): void {
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
   }
 
   register(user: User): Observable<any> {
@@ -43,12 +33,11 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('currentUser');
-    this.currentUserSubject.next(null);
+    localStorage.removeItem(this.STORAGE_KEY);
   }
 
   isLoggedIn(): boolean {
-    return !!this.currentUserSubject.value;
+    return this.currentUserValue !== null;
   }
 
   // Role-based access control methods

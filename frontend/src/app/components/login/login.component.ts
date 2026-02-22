@@ -46,10 +46,11 @@ export class LoginComponent implements OnInit {
     const { username, password } = this.loginForm.value;
 
     this.authService.login(username, password).subscribe({
-      next: (response) => {
+      next: (user) => {
         this.loading = false;
+        // Save the user to localStorage
+        this.authService.saveCurrentUser(user);
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Login successful' });
-        
         // Navigate to dashboard
         this.router.navigate(['/dashboard']);
       },
